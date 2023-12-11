@@ -1,8 +1,10 @@
 <?php
 
 
+use App\Http\Controllers\bankSoal;
 use App\Http\Controllers\trainingReadinessController;
 use App\Models\manpower;
+use App\Models\ojiReport;
 use App\Models\targetOji;
 use App\Models\targetTraining;
 use App\Models\trainingPeserta;
@@ -38,6 +40,13 @@ Route::get('/ojippdmaco',function(Request $request){
         return response(null,404);
     }
     return targetOji::progressOji()->orderBy('oji_reports.startDate','DESC')->get();
+});
+
+Route::get('/ojiAll',function(Request $request){
+    if($request->code!="bbw"){
+        return response(null,404);
+    }
+    return ojiReport::dataOjiAll()->orderBy('oji_reports.startDate','DESC')->get();
 });
 
 Route::get('/monitoringtrainingppdmaco',function(Request $request){
@@ -141,6 +150,10 @@ Route::get('/recordTraining',function(Request $request){
 Route::get('/trainingReadiness',[trainingReadinessController::class,'trainingReadinessAll']);
 Route::get('/trainingReadinessApi',[trainingReadinessController::class,'trainingReadinessAllForExcel']);
 
+Route::post('/soalLogin',[bankSoal::class,'login']);
+Route::get('/getParam',[bankSoal::class,'getParam']);
+Route::get('/mp',[bankSoal::class,'manpowerData']);
+Route::post('/submitInternal',[bankSoal::class,'orangDalam']);
 
 
 

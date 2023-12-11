@@ -7,7 +7,7 @@
       <h5 class="card-title">Training Detail</h5>
       <div class="row mb-3">
         <div class="col-lg-3 col-md-4 label">Judul</div>
-        <div class="col-lg-9 col-md-8">{{ $data->first()->judul }}</div>
+        <div class="col-lg-9 col-md-8">{{ ($data->first()->kodeTr==='-')?$data->first()->uraianMateri:$data->first()->judul }}</div>
       </div>
 
       <div class="row mb-3">

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\bankSoalEvent;
 use App\Models\bankSoalIsi;
 use App\Models\bankSoalJawaban;
 use App\Models\bankSoalMatchingChoice;
@@ -9,6 +10,8 @@ use App\Models\bankSoalMatchingSoal;
 use App\Models\bankSoalUtama;
 use App\Models\tafData;
 use App\Models\tafPeserta;
+use DateInterval;
+use DateTime;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
@@ -60,11 +63,16 @@ class trainingController extends Controller
     }
     public function trainingTaf()
     {
+        if(Request('search')){
+            $data=$this->dataTaf(Request('search'));
+        }else{
+            $data=tafData::dataTaf()->orderBy('createDate','DESC')->paginate(10);
+        }
         return view('training-taf',[
             'title'=>'training',
             'subTitle'=>'taf',
             'user'=>Auth::user(),
-            'data'=>tafData::dataTaf()->orderBy('createDate','DESC')->get()
+            'data'=>$data,
         ]);
     }
 
@@ -252,9 +260,10 @@ class trainingController extends Controller
             'title'=>'training',
             'subTitle'=>'soal',
             'user'=>Auth::user(),
-            'data'=>bankSoalUtama::all()
-        ]);
-        
+            'data'=>bankSoalUtama::all(),
+            'eventList'=>$this->getEventList(),
+            'baseLink'=>env('BASE_URL_SOAL'),
+        ]);        
     }
 
     public function soalDetail(Request $request){
@@ -416,6 +425,21 @@ class trainingController extends Controller
                     'data'=>$soal
                 ];
                 break;
+            case 'submitEvent' :
+               $a=$this->validationEvent($handler);
+               if($a['status']== false){
+                $data=[
+                    'status'=> 'error',
+                    'errors'=>$a['errors']
+                ];
+               }else{
+                $b=$this->saveEventToDatabase($handler);
+                $data=[
+                    'status'=> 'success',
+                    'data'=>$b
+                ];
+               }
+                break;
             default:
                 # code...
                 break;
@@ -540,6 +564,61 @@ class trainingController extends Controller
 
     // callback function---------------------------------------------------------------------
 
+    private function getEventList(){
+        $data=bankSoalEvent::orderBy('created_at','DESC')->get();
+        return $data;
+    }
+    private function saveEventToDatabase($handler){
+        $kodeEvent=uniqid('maco');
+        $date=new DateTime(date('Y-m-d H:i:s'));
+        $date->add(new DateInterval('PT2H'));
+
+        bankSoalEvent::create([
+            'kodeEvent'=>$kodeEvent,
+            'idSoalUtama'=>$handler->data->o,
+            'creator'=>Auth::user()->name,
+            'judul'=>$handler->data->a,
+            'prePost'=>$handler->data->b,
+            'soalUmum'=>($handler->data->c!=null)?1:0,
+            'nilai'=>($handler->data->d!=null)?1:0,
+            'bahas'=>($handler->data->e!=null)?1:0,
+            'acakMc'=>($handler->data->f!=null)?1:0,
+            'acakTf'=>($handler->data->g!=null)?1:0,
+            'acakMatch'=>($handler->data->h!=null)?1:0,
+            'bobotBalanced'=>($handler->data->i!=null)?1:0,
+            'bobotMc'=>(int)$handler->data->j,
+            'bobotTf'=>(int)$handler->data->k,
+            'bobotMatch'=>(int)$handler->data->l,
+            'batasiMc'=>(int)$handler->data->m,
+            'batasiTf'=>(int)$handler->data->n,
+            'remark'=>'',
+            'validUntil'=>$date,
+        ]);
+
+        return [
+            'kodeEvent'=>$kodeEvent,
+            'linkSoal'=>env('BASE_URL_SOAL').'?sings='.$kodeEvent,
+            'validUntil'=>[
+                'date'=>$date->format('d-M-Y'),
+                'time'=>$date->format('H:i:s'),
+            ],
+        ];
+    }
+    private function validationEvent($handler){
+        $a=[
+            'status'=>true,
+            'errors'=>''
+        ];
+        
+        $judul=$handler->data->a;
+        if($judul=='' && $judul== null){
+            $a=[
+                'status'=>false,
+                'errors'=>'judul event masih kosong'
+            ];
+        }
+        return $a;
+    }
     private function validationSoalMatchingB($data){
         $error=[];
         $t=true;
@@ -1252,6 +1331,14 @@ class trainingController extends Controller
                     ->orWhere('lembaga_trainings.lembaga','like','%'.$search.'%')
                     ->orWhere('instructors.namaInstructor','like','%'.$search.'%')
                     ->orderBy('trainings.start','DESC')
+                    ->paginate(10)
+                    ->withQueryString();
+        return $data;
+    }
+    public function dataTaf($search){
+        $data=tafData::dataTaf()
+                    ->where('idTaf','like','%'.$search.'%')
+                    ->orWhere('judul','like','%'.$search.'%')
                     ->paginate(10)
                     ->withQueryString();
         return $data;

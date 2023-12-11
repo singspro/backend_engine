@@ -174,7 +174,7 @@
       <tbody>
         @foreach ($training as $item)
         <tr>
-          <td>{{($item=='-')? $item->uraianMateri:$item->judul }}</td>
+          <td><a href="trainingDetail?imore={{ $item->idTr }}">{{ ($item=='-')? $item->uraianMateri:$item->judul }}</a> </td>
           <td>{{ $item->lembaga }}</td>
           <td>{{ date_format(date_create($item->start),"d M Y") }}</td>    
       </tr>

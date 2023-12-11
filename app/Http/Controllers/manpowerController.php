@@ -261,7 +261,7 @@ class manpowerController extends Controller
         ->join('uraian_materis','trainings.uraianMateri','=','uraian_materis.id')
         ->join('instructors','trainings.instructor','=','instructors.id')
         ->join('lembaga_trainings','trainings.lembaga','=','lembaga_trainings.id')
-        ->select('manpowers.nrp','trainings.kodeTr','uraian_materis.uraianMateri','kode_trainings.judul','trainings.start','instructors.namaInstructor','lembaga_trainings.lembaga')
+        ->select('manpowers.nrp','trainings.kodeTr','uraian_materis.uraianMateri','kode_trainings.judul','trainings.start','instructors.namaInstructor','lembaga_trainings.lembaga','trainings.idTr')
         ->where('manpowers.nrp','=',$slug)
         ->get();
 

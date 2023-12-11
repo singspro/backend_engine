@@ -21,6 +21,7 @@ class ojiReport extends Model
                 'manpowers.subSection',
                 'manpowers.jabatanFn',
                 'manpowers.jobArea',
+                'manpowers.grade',
                 'kode_kompetensis.namaKompetensi',
                 'instructors.namaInstructor');
 
