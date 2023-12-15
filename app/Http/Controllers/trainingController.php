@@ -468,6 +468,7 @@ class trainingController extends Controller
         return response()->json($data,200);
     }
     public function soalImg(Request $request){
+        
         return response()->file(storage_path('app/questionImage/'.$request->img));
     }
     public function tafGetPesertaEdit(Request $request){

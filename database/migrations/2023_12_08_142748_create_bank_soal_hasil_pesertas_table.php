@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('bank_soal_hasil_pesertas', function (Blueprint $table) {
             $table->id();
             $table->string('kodeEvent');
-            $table->string('tokenPeserta');
+            $table->longText('tokenPeserta');
             $table->bigInteger('idMp')->nullable();
             $table->string('nama');
             $table->string('perusahaan');

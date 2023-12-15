@@ -154,6 +154,11 @@ Route::post('/soalLogin',[bankSoal::class,'login']);
 Route::get('/getParam',[bankSoal::class,'getParam']);
 Route::get('/mp',[bankSoal::class,'manpowerData']);
 Route::post('/submitInternal',[bankSoal::class,'orangDalam']);
+Route::get('/mpTest',[bankSoal::class,'dataOrangYangTest']);
+Route::post('/ansSubmit',[bankSoal::class,'kumpulkanTest']);
+Route::get('/xnxx',[bankSoal::class,'imageSoal']);
+
+
 
 
 
