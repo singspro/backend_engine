@@ -190,16 +190,99 @@ class trainingReadinessController extends Controller
     }
 
     public function readinessAllTiremanForExcel(Request $request){
-        $tireMan=manpower::where('jabatanStr','FIELD SUPPORT')
+        if($request->code!="bbw"){
+            return response(null,404);
+        }
+
+        $tireMan=manpower::manpowerAll()
+                            ->where('jabatanStr','FIELD SUPPORT')
                             ->where('jabatanFn','like','%TIREMAN%')
                             ->get();
         $recordTraining=trainingPeserta::recordTraining()
                             ->where('manpowers.jabatanStr','FIELD SUPPORT')
                             ->where('manpowers.jabatanFn','like','%TIREMAN%')
                             ->get();
-        return response()->json(array(
-            'data'=>$recordTraining
-        ),200);
+        $trainingMatrix=trainingMatrix::where('jabatan','TIREMAN')->get();
+        $data=[];
+        foreach ($tireMan as $vTire) {
+            $mFound=false;
+            $m=[];
+            $mText='';
+            foreach ($trainingMatrix as $vMatrix) {
+               if($vTire->grade===$vMatrix->grade){
+                $m[]=$vMatrix->mandatory;
+                if($mText===''){
+                    $mText=$vMatrix->mandatory;
+                }else{
+                    $mText=$mText.', '.$vMatrix->mandatory;
+                }
+                $mFound=true;
+               }
+            }
+
+            $c=[];
+            $cText='';
+            $o=[];
+            $oText='';
+            foreach ($m as $vMandatory) {
+                $found=false;
+                foreach ($recordTraining as $vTraining) {
+                    if($vTire->nrp===$vTraining->nrp && $vMandatory===$vTraining->kodeTr){
+                        $c[]=$vMandatory;
+                        if($cText===''){
+                            $cText=$vMandatory;
+                        }else{
+                            $cText=$cText.', '.$vMandatory;
+                        }
+                        $found=true;       
+                        break;
+                    }
+                }
+                if(!$found){
+                    $o[]=$vMandatory;
+                    if($oText===''){
+                        $oText=$vMandatory;
+                    }else{
+                        $oText=$oText.', '.$vMandatory;
+                    }
+                }
+            }
+
+            if($mFound){
+                $ach=round(count($c)/count($m)*100 ,2). ' %';
+                $mandatory=[
+                    'nrp'=>$vTire->nrp,
+                    'nama'=>$vTire->nama,
+                    'perusahaan'=>$vTire->perusahaanText,
+                    'grade'=>$vTire->grade,
+                    'jobArea'=>$vTire->jobArea,
+                    'qtyMandatory'=>count($m),
+                    'qtyClose'=>count($c),
+                    'qtyOpen'=>count($o),
+                    'mandatory'=>$mText,
+                    'close'=>$cText,
+                    'open'=>$oText,
+                    'ach'=>$ach
+                ];
+            }else{
+                $mandatory=[
+                    'nrp'=>$vTire->nrp,
+                    'nama'=>$vTire->nama,
+                    'perusahaan'=>$vTire->perusahaanText,
+                    'grade'=>$vTire->grade,
+                    'jobArea'=>$vTire->jobArea,
+                    'qtyMandatory'=>'-',
+                    'qtyClose'=>'-',
+                    'qtyOpen'=>'-',
+                    'mandatory'=>'-',
+                    'close'=>'-',
+                    'open'=>'-',
+                    'ach'=>'-',
+                ];
+            }
+            $data[]=$mandatory;
+        }
+        return json_encode($data);
     }
 }
 
