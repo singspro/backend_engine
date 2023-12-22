@@ -6,7 +6,7 @@ use App\Models\manpower;
 use App\Models\trainingMatrix;
 use App\Models\trainingPeserta;
 use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
+
 
 
 class trainingReadinessController extends Controller
@@ -197,6 +197,7 @@ class trainingReadinessController extends Controller
         $tireMan=manpower::manpowerAll()
                             ->where('jabatanStr','FIELD SUPPORT')
                             ->where('jabatanFn','like','%TIREMAN%')
+                            ->where('status','AKTIF')
                             ->get();
         $recordTraining=trainingPeserta::recordTraining()
                             ->where('manpowers.jabatanStr','FIELD SUPPORT')
@@ -209,7 +210,7 @@ class trainingReadinessController extends Controller
             $m=[];
             $mText='';
             foreach ($trainingMatrix as $vMatrix) {
-               if($vTire->grade===$vMatrix->grade){
+               if($vTire->grade===$vMatrix->grade && $vMatrix->spclRole===1){
                 $m[]=$vMatrix->mandatory;
                 if($mText===''){
                     $mText=$vMatrix->mandatory;
