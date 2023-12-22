@@ -188,5 +188,18 @@ class trainingReadinessController extends Controller
         
         return $progress;
     }
+
+    public function readinessAllTiremanForExcel(Request $request){
+        $tireMan=manpower::where('jabatanStr','FIELD SUPPORT')
+                            ->where('jabatanFn','like','%TIREMAN%')
+                            ->get();
+        $recordTraining=trainingPeserta::recordTraining()
+                            ->where('manpowers.jabatanStr','FIELD SUPPORT')
+                            ->where('manpowers.jabatanFn','like','%TIREMAN%')
+                            ->get();
+        return response()->json(array(
+            'data'=>$recordTraining
+        ),200);
+    }
 }
 

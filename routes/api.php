@@ -149,6 +149,7 @@ Route::get('/recordTraining',function(Request $request){
 
 Route::get('/trainingReadiness',[trainingReadinessController::class,'trainingReadinessAll']);
 Route::get('/trainingReadinessApi',[trainingReadinessController::class,'trainingReadinessAllForExcel']);
+Route::get('/trainingReadinessTiremanApi',[trainingReadinessController::class,'readinessAllTiremanForExcel']);
 
 Route::post('/soalLogin',[bankSoal::class,'login']);
 Route::get('/getParam',[bankSoal::class,'getParam']);

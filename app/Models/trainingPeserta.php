@@ -47,6 +47,7 @@ class trainingPeserta extends Model
                         'manpowers.section',
                         'manpowers.subSection',
                         'manpowers.jabatanFn',
+                        'manpowers.jabatanStr',
                         'manpowers.grade',
                         'perusahaans.perusahaan',
                         'kode_trainings.judul',
