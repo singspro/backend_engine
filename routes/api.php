@@ -128,6 +128,7 @@ Route::get('/recordTraining',function(Request $request){
             'subSection'=>$value->subSection,
             'jabatanFn'=>$value->jabatanFn,
             'grade'=>$value->grade,
+            'status'=>$value->status,
             'kodeTr'=>$value->kodeTr,
             'judul'=>($value->kodeTr==='-')? $value->urnMtr :$value->judul,
             'start'=>$value->start,
