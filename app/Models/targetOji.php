@@ -24,6 +24,7 @@ class targetOji extends Model
                     'manpowers.subSection',
                     'manpowers.jobArea',
                     'manpowers.grade',
+                    'manpowers.status',
                     'target_ojis.kodeKompetensi',
                     'kode_kompetensis.namaKompetensi',
                     'target_ojis.tahun',

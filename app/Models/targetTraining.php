@@ -28,6 +28,7 @@ class targetTraining extends Model
                                 'manpowers.nama' ,
                                 'manpowers.jabatanFn',
                                 'manpowers.grade',
+                                'manpowers.status as sts',
                                 'manpowers.jobArea',
                                 'kode_trainings.judul'
                                 )
