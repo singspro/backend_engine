@@ -35,6 +35,10 @@ Route::get('/manpowerppdmaco',function(Request $request){
                                             ->get();
 });
 
+Route::get('/manpowerppdmacoAll',function(Request $request){
+    return manpower::manpowerAll()->get();
+});
+
 Route::get('/ojippdmaco',function(Request $request){
     if($request->code!="bbw"){
         return response(null,404);
@@ -131,6 +135,8 @@ Route::get('/recordTraining',function(Request $request){
             'jabatanFn'=>$value->jabatanFn,
             'grade'=>$value->grade,
             'status'=>$value->status,
+            'trainingPrefix'=>$value->trainingPrefix,
+            'trainingSpcl'=>$value->trainingSpcl,
             'kodeTr'=>$value->kodeTr,
             'judul'=>($value->kodeTr==='-')? $value->urnMtr :$value->judul,
             'start'=>$value->start,
@@ -153,14 +159,17 @@ Route::get('/recordTraining',function(Request $request){
 Route::get('/trainingReadiness',[trainingReadinessController::class,'trainingReadinessAll']);
 Route::get('/trainingReadinessApi',[trainingReadinessController::class,'trainingReadinessAllForExcel']);
 Route::get('/trainingReadinessTiremanApi',[trainingReadinessController::class,'readinessAllTiremanForExcel']);
+Route::get('/trainingReadinessStafApi',[trainingReadinessController::class,'readinessAllStafForExcel']);
 
 Route::post('/soalLogin',[bankSoal::class,'login']);
 Route::get('/getParam',[bankSoal::class,'getParam']);
 Route::get('/mp',[bankSoal::class,'manpowerData']);
 Route::post('/submitInternal',[bankSoal::class,'orangDalam']);
+Route::post('/submitGeneral',[bankSoal::class,'orangUmum']);
 Route::get('/mpTest',[bankSoal::class,'dataOrangYangTest']);
 Route::post('/ansSubmit',[bankSoal::class,'kumpulkanTest']);
 Route::get('/xnxx',[bankSoal::class,'imageSoal']);
+Route::get('/getHasilTest',[bankSoal::class,'hasilTest']);
 
 
 

@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\access_token_table;
 use App\Models\bankSoalEvent;
+use App\Models\bankSoalHasilJawabanModel;
+use App\Models\bankSoalHasilPeserta;
 use App\Models\bankSoalIsi;
 use App\Models\bankSoalJawaban;
 use App\Models\bankSoalMatchingChoice;
@@ -33,6 +36,126 @@ use App\Models\trainingPeserta;
 
 class trainingController extends Controller
 {
+    public function pengerjaan(Request $request){
+        // $soalSatuan=$this->ambilDataSoalSatuan('soalIsi65dd3ba7d41bb',3);
+        // dd($soalSatuan);
+
+        //----------------------------//
+        $h=[];
+        $jenis=[];
+        $hasilUtama=bankSoalHasilPeserta::where('tokenPeserta',$request->d)->get();
+        $hasilJawaban=bankSoalHasilJawabanModel::where('tokenPeserta',$request->d)->where('jenis','!=',3)->get();
+        $hasilJawabanJenis3=bankSoalHasilJawabanModel::where('tokenPeserta',$request->d)->where('jenis',3)->get();
+        $hasilJawabanAll=bankSoalHasilJawabanModel::where('tokenPeserta',$request->d)->get();
+        $event=bankSoalEvent::where('kodeEvent',$hasilUtama->first()->kodeEvent)->get();
+        foreach ($hasilJawabanAll as $vHasilJawabanAll) {
+            $jenis[]=$vHasilJawabanAll->jenis;
+        }
+
+        $jenis=array_unique($jenis);
+
+        foreach ($hasilJawabanJenis3 as $vHasilJawabanJenis3) {
+            $q[]=$vHasilJawabanJenis3->idSoalIsi;
+        }
+        $q=array_unique($q);
+
+        foreach ($q as $vq) {
+            $soalSatuan=$this->ambilDataSoalSatuan($vq,$request->d,3);
+            $h[]=$soalSatuan;
+        }
+
+        foreach ($hasilJawaban as $vHasilJawaban) {
+            $soalSatuan=$this->ambilDataSoalSatuan($vHasilJawaban->idSoalIsi,$request->d,$vHasilJawaban->jenis);
+            $soalSatuan['dijawab']=$vHasilJawaban->jawaban;
+            $h[]=$soalSatuan;
+        }
+        // dd($h);
+       
+        return view('training-bankSoalHasilPengerjaan',[
+            'title'=>'Bank Soal',
+            'subTitle'=>'Event List',
+            'user'=>Auth::user(),
+            'jawaban'=>$h,
+            'event'=>$event,
+            'profile'=>$hasilUtama,
+            'jenis'=>$jenis
+        ]);
+    }
+
+    public function deleteEventGas(Request $request){
+        access_token_table::where('kodeEvent',$request->data)->delete();
+        bankSoalEvent::where('kodeEvent',$request->data)->delete();
+        bankSoalHasilJawabanModel::where('kodeEvent',$request->data)->delete();
+        bankSoalHasilPeserta::where('kodeEvent',$request->data)->delete();
+
+        return response()->json([
+            'status'=>'ok'
+        ],200);
+    }
+
+    public function eventDetailGass(Request $request){
+        $d=[];
+        $hasilPeserta=bankSoalHasilPeserta::where('kodeEvent',$request->d)->get();
+        $event=bankSoalEvent::where('kodeEvent',$request->d)->get();
+        if($event->first()->soalUmum===1){
+            foreach ($hasilPeserta as $vHasilPerserta) {
+                $d[]=[
+                    'nrp'=>'-',
+                    'nama'=>$vHasilPerserta->nama,
+                    'perusahaan'=>$vHasilPerserta->perusahaan,
+                    'jabatanFn'=>$vHasilPerserta->jabatanFn,
+                    'benar'=>$vHasilPerserta->benar,
+                    'salah'=>$vHasilPerserta->salah,
+                    'nilai'=>$vHasilPerserta->nilai,
+                    'token'=>$vHasilPerserta->tokenPeserta,
+                ];
+            }
+        }else{
+            foreach ($hasilPeserta as $vHasilPerserta) {
+                $mp=manpower::manpowerAll()->where('manpowers.id',$vHasilPerserta->idMp)->get();
+                $d[]=[
+                    'nrp'=>$mp->first()->nrp,
+                    'nama'=>$mp->first()->nama,
+                    'perusahaan'=>$mp->first()->perusahaanText,
+                    'jabatanFn'=>$mp->first()->jabatanFn,
+                    'benar'=>$vHasilPerserta->benar,
+                    'salah'=>$vHasilPerserta->salah,
+                    'nilai'=>$vHasilPerserta->nilai,
+                    'token'=>$vHasilPerserta->tokenPeserta,
+                ];
+            }
+        }
+
+        return view('training-bankSoalHasilEvent',[
+            'title'=>'Bank Soal',
+            'subTitle'=>'Event List',
+            'user'=>Auth::user(),
+            'data'=>$d,
+        ]);
+    }
+
+    public function deleteSoal(Request $request){
+        $events=bankSoalEvent::where('idSoalUtama',$request->data)->get();
+        foreach ($events as $vEvent) {
+            access_token_table::where('kodeEvent',$vEvent->kodeEvent)->delete();
+            bankSoalHasilPeserta::where('kodeEvent',$vEvent->kodeEvent)->delete();
+        }
+        bankSoalHasilJawabanModel::where('idSoalUtama',$request->data)->delete();
+        bankSoalEvent::where('idSoalUtama',$request->data)->delete();
+
+
+        $soalIsi=bankSoalIsi::where('idSoalUtama',$request->data)->get();
+        foreach ($soalIsi as $vSoalIsi) {
+            bankSoalJawaban::where('idSoalIsi',$vSoalIsi->idSoalIsi)->delete();
+            bankSoalMatchingChoice::where('idSoalIsi',$vSoalIsi->idSoalIsi)->delete();
+            bankSoalMatchingSoal::where('idSoalIsi',$vSoalIsi->idSoalIsi)->delete();
+        }
+        bankSoalUtama::where('idSoalUtama',$request->data)->delete();
+        bankSoalIsi::where('idSoalUtama',$request->data)->delete();
+       return response()->json([
+        'status'=>'ok'
+       ],200);
+    }
     public function trainingData() 
     {   
         if(Request('search')){
@@ -257,8 +380,18 @@ class trainingController extends Controller
 
     public function bankSoalMain(Request $request){
         return view('training-bankSoal',[
-            'title'=>'training',
-            'subTitle'=>'soal',
+            'title'=>'Bank Soal',
+            'subTitle'=>'Daftar Soal',
+            'user'=>Auth::user(),
+            'data'=>bankSoalUtama::all(),
+            'eventList'=>$this->getEventList(),
+            'baseLink'=>env('BASE_URL_SOAL'),
+        ]);        
+    }
+    public function soalEvent(Request $request){
+        return view('training-bankSoalEvent',[
+            'title'=>'Bank Soal',
+            'subTitle'=>'Event List',
             'user'=>Auth::user(),
             'data'=>bankSoalUtama::all(),
             'eventList'=>$this->getEventList(),
@@ -268,13 +401,42 @@ class trainingController extends Controller
 
     public function soalDetail(Request $request){
         return view('training-bankSoalDetail',[
-            'title'=>'training',
-            'subTitle'=>'soal',
+            'title'=>'Bank Soal',
+            'subTitle'=>'Daftar Soal',
             'user'=>Auth::user(),
             'dataUtama'=>bankSoalUtama::where('idSoalUtama',$request->bintangKecil)->get(),
             'blankImgPath'=>env('FILE_HOST').'imgQuestions?img=blank.jpg',
             'blankImgPathMatchingB'=>env('FILE_HOST').'imgQuestions?img=blank.jpg'
         ]);
+    }
+
+    public function soalNew(Request $request){
+        return view('training-bankSoalNew',[
+            'title'=>'Bank Soal',
+            'subTitle'=>'New Soal',
+            'user'=>Auth::user(),
+        ]);
+    }
+
+    public function submitNewSoal1(Request $request){
+        $cekValidation=Validator::make($request->all(),$this->newSoal1Validator(),$this->newSoal1ValidatorMsg());
+        if ($cekValidation->fails()){
+            return redirect('/soalNew')
+                        ->withErrors($cekValidation)
+                        ->withInput();  
+        }
+        $idSoalUtama=uniqid('soalUtama');
+        $inputHeaderSoal=bankSoalUtama::create([
+            'idSoalUtama'=>$idSoalUtama,
+            'judul'=>$request->judul,
+            'author'=>$request->author,
+            'revisi'=>0,
+            'tingkatKesulitan'=>0
+
+        ]);
+
+        return redirect('soalDetail?bintangKecil='.$idSoalUtama);
+
     }
 
     public function hemm(Request $request){
@@ -564,6 +726,27 @@ class trainingController extends Controller
     
 
     // callback function---------------------------------------------------------------------
+    // callback function---------------------------------------------------------------------
+    // callback function---------------------------------------------------------------------
+    // callback function---------------------------------------------------------------------
+    // callback function---------------------------------------------------------------------
+    // callback function---------------------------------------------------------------------
+    // callback function---------------------------------------------------------------------
+    // callback function---------------------------------------------------------------------
+
+    private function newSoal1Validator(){
+        return [
+            'judul'=>['Required'],
+            'author'=>['Required']
+        ];
+    }
+
+    private function newSoal1ValidatorMsg(){
+        return[
+            'judul'=>'Judul Masih kosong harus diisi',
+            'author'=>'Author masih kosong harus diisi'
+        ];
+    }
 
     private function getEventList(){
         $data=bankSoalEvent::orderBy('created_at','DESC')->get();
@@ -598,7 +781,7 @@ class trainingController extends Controller
 
         return [
             'kodeEvent'=>$kodeEvent,
-            'linkSoal'=>env('BASE_URL_SOAL').'?sings='.$kodeEvent,
+            'linkSoal'=>env('BASE_URL_SOAL').$kodeEvent,
             'validUntil'=>[
                 'date'=>$date->format('d-M-Y'),
                 'time'=>$date->format('H:i:s'),
@@ -1097,6 +1280,113 @@ class trainingController extends Controller
         }
 
     }
+
+    public function ambilDataSoalSatuan($idSoalIsi,$tokenPeserta, $jenis){
+        $data=[];
+        $pilihanJawaban=[];
+        $key=null;
+        $alpha=['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O',
+        'P','Q','R','S','T','U','V','W','X','Y','Z','AA','BB','CC','DD','EE','FF','GG','HH','II','JJ','KK','LL','MM','NN','OO','PP'];
+        switch ($jenis) {
+            case 3:
+                $pj=[];
+                $soalHeader=bankSoalIsi::where('idSoalIsi',$idSoalIsi)->get();
+                $soal=bankSoalMatchingSoal::where('idSoalIsi',$idSoalIsi)->get();
+                $choice=bankSoalMatchingChoice::where('idSoalIsi',$idSoalIsi)->get();
+                // dd($soalHeader);
+                if(!$soalHeader->first()){
+                    $j=bankSoalHasilJawabanModel::where('idSoalIsi',$idSoalIsi)->where('tokenPeserta',$tokenPeserta)->get();
+                    foreach ($j as $vj) {
+                        $ko[]=[
+                            'id'=>null,
+                            'soal'=>'NOT FOUND',
+                            'kunci'=>'NOT FOUND',
+                            'dijawab'=>$vj->jawaban
+                        ];
+                    }
+                    $data=[
+                        'idSoalUtama'=>null,
+                        'idSoalIsi'=>null,
+                        'jenis'=>$jenis,
+                        'soalMain'=>'..........QUESTION NOT AVAILABLE OR WAS DELETED............',
+                        'soal'=>$ko,
+                        'choice'=>[
+                            [
+                                'index'=>null,
+                                'c'=>'NOT FOUND',
+                                ]
+                        ],
+                        'fileStatus'=>false,
+                        'filePath'=>''
+                    ];
+                    // dd($data);
+
+                }else{
+
+                    foreach ($soal as $vSoal) {
+                        $j=bankSoalHasilJawabanModel::where('idSoalIsi',$idSoalIsi)->where('idSoalMatch',$vSoal->id)->where('tokenPeserta',$tokenPeserta)->get();
+                        $soalMc[]=[
+                            'id'=>$vSoal->id,
+                            'soal'=>$vSoal->soal,
+                            'kunci'=>$vSoal->kunci,
+                            'dijawab'=>$j->first()->jawaban
+                        ];
+                    }
+                    foreach ($choice as $key => $vChoice) {
+                        $pj[]=[
+                            'index'=>$alpha[$key],
+                            'c'=>$vChoice->pilihanJawaban,
+                        ];
+                    }
+                    $data=[
+                        'idSoalUtama'=>$soalHeader->first()->idSoalUtama,
+                        'idSoalIsi'=>$soalHeader->first()->idSoalIsi,
+                        'jenis'=>$soalHeader->first()->jenisSoal,
+                        'soalMain'=>$soalHeader->first()->soal,
+                        'soal'=>$soalMc,
+                        'choice'=>$pj,
+                        'fileStatus'=>$this->getSoalImgPath($idSoalIsi)['fileStatus'],
+                        'filePath'=>$this->getSoalImgPath($idSoalIsi)['filePath']
+                    ];
+                }
+                break;
+            default:
+                $soal=bankSoalIsi::where('idSoalIsi',$idSoalIsi)->get();
+                $choice=bankSoalJawaban::where('idSoalIsi',$idSoalIsi)->get();
+                if(!$soal->first()){
+                    $data=[
+                        'idSoalUtama'=>null,
+                        'idSoalIsi'=>null,
+                        'jenis'=>$jenis,
+                        'soal'=>'..........QUESTION NOT AVAILABLE OR WAS DELETED............',
+                        'choice'=>['NOT FOUND','NOT FOUND'],
+                        'key'=>'NOT FOUND',
+                        'fileStatus'=>false,
+                        'filePath'=>'',
+                    ];
+                }else{
+                    foreach ($choice as $vChoice) {
+                        $pilihanJawaban[]=$vChoice->pilihanJawaban;
+                        if($key===null && $vChoice->jawabanBenar===1){
+                            $key=$vChoice->pilihanJawaban;
+                        }
+                    }
+    
+                    $data=[
+                        'idSoalUtama'=>$soal->first()->idSoalUtama,
+                        'idSoalIsi'=>$soal->first()->idSoalIsi,
+                        'jenis'=>$soal->first()->jenisSoal,
+                        'soal'=>$soal->first()->soal,
+                        'choice'=>$pilihanJawaban,
+                        'key'=>$key,
+                        'fileStatus'=>$this->getSoalImgPath($idSoalIsi)['fileStatus'],
+                        'filePath'=>$this->getSoalImgPath($idSoalIsi)['filePath']
+                    ];
+                }
+                break;
+        }
+        return $data;
+    }
     public function ambilDataSoal($kode){
         $dataAll=[];
         $jenis=[];
@@ -1116,16 +1406,68 @@ class trainingController extends Controller
                     $choice=[];
                     $im=0;
                     $qtyMatchingMain++;
+                    $jmlhPostTrueAll=0;
+                    $jmlhPreTrueAll=0;
+                    $jmlhPostAll=0;
+                    $jmlhPreAll=0;
+                    $prog=[
+                        'preRes'=>0,
+                        'preSuc'=>0,
+                        'posRes'=>0,
+                        'posSuc'=>0,
+                    ];
                     $soalMatching=bankSoalMatchingSoal::where('idSoalIsi',$value->idSoalIsi)->get();
+                    $jawaban=bankSoalHasilJawabanModel::detail()->where('bank_soal_hasil_jawaban_models.idSoalIsi',$value->idSoalIsi)->get();
                     $soalMatchingChoice=bankSoalMatchingChoice::where('idSoalIsi',$value->idSoalIsi)->get();
                     foreach ($soalMatching as $m) {
+                        $jmlP=0;
+                        $jmlPr=0;
+                        $jmlPb=0;
+                        $jmlPrb=0;
                         $im++;
+                        
+                        if($jawaban){
+
+                            foreach ($jawaban as $vJawaban) {
+                                if($vJawaban->prePost==='postTest'){
+                                    if($vJawaban->idSoalMatch===$m->id){
+                                        $jmlhPostAll++;
+                                        $jmlP++;
+                                        if ($vJawaban->jawaban===$m->kunci) {
+                                            $jmlPb++;
+                                            $jmlhPostTrueAll++;
+                                        }
+                                    }
+                                }else{
+                                    if ($vJawaban->idSoalMatch===$m->id) {
+                                        $jmlhPreAll++;
+                                        $jmlPr++;
+                                        if($vJawaban->jawaban===$m->kunci ){
+                                            $jmlPrb++;
+                                            $jmlhPreTrueAll++;
+                                        }
+                                    }
+                                }
+                            }
+                        }
                         $soal[]=[
                             'id'=>$m->id,
                             'soal'=>$m->soal,
-                            'kunci'=>$m->kunci
+                            'kunci'=>$m->kunci,
+                            'preQty'=>$jmlPr,
+                            'preV'=>$jmlPr===0 ? 0 :round($jmlPrb/$jmlPr*100,2),
+                            'postQty'=>$jmlP,
+                            'postV'=>$jmlP===0 ? 0 :round($jmlPb/$jmlP*100,2),
                         ];
                     }
+                    
+                    $prog=[
+                        'preRes'=>round($jmlhPreAll/$im,2),
+                        'preSuc'=>$jmlhPreAll===0?0:round($jmlhPreTrueAll/$jmlhPreAll*100,2),
+                        'posRes'=>round($jmlhPostAll/$im,2),
+                        'posSuc'=>$jmlhPostAll===0?0:round($jmlhPostTrueAll/$jmlhPostAll*100,2),
+                    ];
+
                     $qtyMatchingSub[]=$im;
                     foreach ($soalMatchingChoice as $n) {
                         $choice[]=[
@@ -1140,19 +1482,31 @@ class trainingController extends Controller
                         'soalMain'=>$value->soal,
                         'soal'=>$soal,
                         'choice'=>$choice,
+                        'prog'=>$prog,
                         'fileStatus'=>$this->getSoalImgPath($value->idSoalIsi)['fileStatus'],
                         'filePath'=>$this->getSoalImgPath($value->idSoalIsi)['filePath']
                     ];
                     $jenis[]=$value->jenisSoal;
-                    break;                    
+                    break;  
+                    
+
+
+
                 default:
                     $choice=[];
                     $key='';
+                    $prog=[
+                        'preRes'=>0,
+                        'preSuc'=>0,
+                        'posRes'=>0,
+                        'posSuc'=>0,
+                    ];
                     if($value->jenisSoal===1){
                         $qtyMc++;
                     }elseif($value->jenisSoal===2){
                         $qtyTf++;
                     }
+
                     foreach ($ans as $valueAns) {
                         if($value->idSoalIsi===$valueAns->idSoalIsi){
                             $choice[]=[
@@ -1164,6 +1518,33 @@ class trainingController extends Controller
                             }
                         }
                     }
+
+                    $jawaban=bankSoalHasilJawabanModel::detail()->where('bank_soal_hasil_jawaban_models.idSoalIsi',$value->idSoalIsi)->get();
+                    $jmlP=0;
+                    $jmlPr=0;
+                    $jmlPb=0;
+                    $jmlPrb=0;
+                    if($jawaban){
+                        foreach ($jawaban as $vJawaban) {
+                            if($vJawaban->prePost==='postTest' ){
+                                $jmlP++;
+                                if ($vJawaban->jawaban===$key) {
+                                    $jmlPb++;
+                                }
+                            }else{
+                                $jmlPr++;
+                                if ($vJawaban->jawaban===$key) {
+                                    $jmlPrb++;
+                                }
+                            }
+                        }
+                    }
+                    $prog=[
+                        'preRes'=>$jmlPr,
+                        'preSuc'=>$jmlPr===0 ? 0 : round($jmlPrb/$jmlPr*100,2),
+                        'posRes'=>$jmlP,
+                        'posSuc'=>$jmlP===0 ? 0 : round($jmlPb/$jmlP*100,2),
+                    ];
                     $data[]=[
                         'idSoalUtama'=>$value->idSoalUtama,
                         'idSoalIsi'=>$value->idSoalIsi,
@@ -1171,6 +1552,7 @@ class trainingController extends Controller
                         'soal'=>$value->soal,
                         'choice'=>$choice,
                         'key'=>$key,
+                        'prog'=>$prog,
                         'fileStatus'=>$this->getSoalImgPath($value->idSoalIsi)['fileStatus'],
                         'filePath'=>$this->getSoalImgPath($value->idSoalIsi)['filePath']
                     ];

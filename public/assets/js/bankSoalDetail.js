@@ -1632,6 +1632,7 @@ $(document).ready(async function(){
     }
   
     function showSoal(x){
+      // console.log(x);
       document.getElementById('mcQty').innerHTML=x.qty.qtyMc;
       document.getElementById('tfQty').innerHTML=x.qty.qtyTf;
       if(x.qty.qtyMatching !=0){
@@ -1688,7 +1689,9 @@ $(document).ready(async function(){
                 img='';
               }
               let cover=`<div class="col-sm-10 mt-3">${img}${choice}</div>`
-              isi+=`<li class="list-group-item">${element.soal}${cover} <div class="position-relative mt-5"><div class="position-absolute bottom-0 start-0"><p class="px-4"><strong>Success : 80%</strong></p></div><div class="position-absolute bottom-0 end-0">
+              isi+=`<li class="list-group-item">${element.soal}${cover} <div class="position-relative mt-5"><div class="position-absolute bottom-0 start-0">
+              <p class="px-4 text-bg-info">Success (Post Test) : ${element.prog.posSuc}%  dari ${element.prog.posRes} responden</p>
+              </div><div class="position-absolute bottom-0 end-0">
                 <button id ="del" type="button" data-delete="${element.idSoalIsi}" data-isi='${element.soal}' class="btn btn-danger" title="delete"><i class="bi bi-trash"></i></button>
                 <button id="editTfBtn" data-edit="${element.idSoalIsi}" type="button" class="btn btn-success" title="edit"><i class="bi bi-wrench"></i></button></div></div></li>`;
               }
@@ -1724,7 +1727,9 @@ $(document).ready(async function(){
                 img='';
               }
               let cover=`<div class="col-sm-10 mt-3">${img}${choice}</div>`
-              isi+=`<li class="list-group-item">${element.soal}${cover} <div class="position-relative mt-5"><div class="position-absolute bottom-0 start-0"><p class="px-4"><strong>Success : 80%</strong></p></div><div class="position-absolute bottom-0 end-0">
+              isi+=`<li class="list-group-item">${element.soal}${cover} <div class="position-relative mt-5"><div class="position-absolute bottom-0 start-0">
+              <p class="px-4 text-bg-info">Success (Post Test) : ${element.prog.posSuc}%  dari ${element.prog.posRes} responden</p>
+              </div><div class="position-absolute bottom-0 end-0">
                 <button id ="del" type="button" data-delete="${element.idSoalIsi}" data-isi='${element.soal}' class="btn btn-danger" title="delete"><i class="bi bi-trash"></i></button>
                 <button id="editBtn" data-edit="${element.idSoalIsi}" type="button" class="btn btn-success" title="edit"><i class="bi bi-wrench"></i></button></div></div></li>`;
               }
@@ -1759,7 +1764,7 @@ $(document).ready(async function(){
           `</div>
               <div class="position-relative mt-5">
                 <div class="position-absolute bottom-0 start-0">
-                  <p class="px-4"><strong>Success : 80%</strong></p>
+                <p class="px-4 text-bg-info">Success (post test) : ${m.prog.posSuc}% dari ${m.prog.posRes} responden</p>
                 </div>
                 <div class="position-absolute bottom-0 end-0">
                   <button id ="delMatchingA" type="button" data-delete="${m.idSoalIsi}" data-isi='Soal Matching' class="btn btn-danger" title="delete"><i class="bi bi-trash"></i></button>
@@ -1825,7 +1830,7 @@ $(document).ready(async function(){
           `</div>
               <div class="position-relative mt-5">
                 <div class="position-absolute bottom-0 start-0">
-                  <p class="px-4"><strong>Success : 80%</strong></p>
+                  <p class="px-4 text-bg-info">Success (post test) : ${m.prog.posSuc}% dari ${m.prog.posRes} responden</p>
                 </div>
                 <div class="position-absolute bottom-0 end-0">
                   <button id ="delMatchingB" type="button" data-delete="${m.idSoalIsi}" data-isi='Soal Matching' class="btn btn-danger" title="delete"><i class="bi bi-trash"></i></button>

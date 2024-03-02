@@ -53,6 +53,7 @@ class trainingPeserta extends Model
                         'perusahaans.perusahaan',
                         'kode_trainings.judul',
                         'kode_trainings.trainingPrefix',
+                        'kode_trainings.trainingPrefixStaff',
                         'kode_trainings.spesialis as trainingSpcl',
                         'uraian_materis.uraianMateri as urnMtr',
                         'lokasi_trainings.lokasiTraining as lksTrn',

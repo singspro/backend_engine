@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\bankSoal;
+use App\Http\Controllers\Controller;
 use App\Http\Controllers\dashboardController;
 use App\Http\Controllers\loginController;
 use App\Http\Controllers\logOutController;
@@ -61,6 +62,13 @@ Route::get('/anget',[trainingController::class,'deleteTraining'])->name('multifl
 Route::get('/soalMain',[trainingController::class,'bankSoalMain'])->middleware('auth');
 Route::get('/soalDetail',[trainingController::class,'soalDetail'])->middleware('auth');
 Route::post('/soalData',[trainingController::class,'hemm'])->middleware('auth');
+Route::get('/soalNew',[trainingController::class,'soalNew'])->middleware('auth');
+Route::post('/soalNewSubmit1',[trainingController::class,'submitNewSoal1'])->middleware('auth');
+Route::get('/soalEvent',[trainingController::class,'soalEvent'])->middleware('auth');
+Route::post('/deleteSoal',[trainingController::class,'deleteSoal'])->middleware('auth');
+Route::get('/eventDetail',[trainingController::class,'eventDetailGass'])->middleware('auth');
+route::delete('/deleteEvent',[trainingController::class,'deleteEventGas'])->middleware('auth');
+Route::get('/showResult',[trainingController::class,'pengerjaan'])->middleware('auth');
 
 
 
@@ -93,4 +101,9 @@ Route::post('/kocok',[mentorController::class,'deleteMentor'])->middleware('auth
 Route::get('/soal',[bankSoal::class,'soal']);
 Route::get('/imgQuestions',[trainingController::class,'soalImg'])->middleware('auth');
 Route::post('/imgSend',[trainingController::class,'soalImageSend'])->middleware('auth');
+
+
+//Test apis
+
+Route::get('/test',[Controller::class,'test'])->middleware('auth');
 

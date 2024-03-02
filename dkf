@@ -1,0 +1,47 @@
+[33mcommit 527d36debf8fddffc5b6f6b6484038a603c37675[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m, [m[1;31mppdbackend/main[m[33m)[m
+Author: singspro <singgih.singspro@gmail.com>
+Date:   Wed Jan 3 08:34:01 2024 +0700
+
+    menambahkan manpower grade pada API target OJI dan Progress Oji
+
+[33mcommit f477e5479ee27ba1188d4da499571d9bb10fdedf[m
+Author: singspro <singgih.singspro@gmail.com>
+Date:   Sat Dec 23 13:23:11 2023 +0700
+
+    menambahkan status aktif pada record training api
+
+[33mcommit ba48ad0849346a6ce64f910a00cb8208e521f3c6[m
+Author: singspro <singgih.singspro@gmail.com>
+Date:   Fri Dec 22 15:54:10 2023 +0700
+
+    edit training readiness controller
+
+[33mcommit 4e036e21b2e9cd1d6d75cfde491501ea23ec3f4c[m
+Author: singspro <singgih.singspro@gmail.com>
+Date:   Fri Dec 22 11:09:30 2023 +0700
+
+    menambahkan api untuk readiness training tireman joss
+
+[33mcommit 4eb2370d958180590b6dff2cea9c7821b2f14573[m
+Author: singspro <singgih.singspro@gmail.com>
+Date:   Fri Dec 22 07:57:08 2023 +0700
+
+    tambah training matrix table collumn dan buka api untuk readines training tireman
+
+[33mcommit 1884eab7491edceb169bfcc9e57a71ce16716428[m
+Author: singspro <singgih.singspro@gmail.com>
+Date:   Sat Dec 16 06:45:01 2023 +0700
+
+    Add API Image Modifiy Bank Soal, Training Controller, dan table hasil bank soal peserta
+
+[33mcommit 3f12c585f76932f812968bb5ce84fee82ecd418e[m
+Author: unknown <singgih.singspro@gmail.com>
+Date:   Tue Dec 12 06:52:17 2023 +0700
+
+    first commit
+
+[33mcommit 814e8f1fd6ef00498f7231c962e0cbba2d774f88[m
+Author: unknown <singgih.singspro@gmail.com>
+Date:   Sat Dec 9 10:31:43 2023 +0700
+
+    first commit

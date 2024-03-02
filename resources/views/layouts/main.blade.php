@@ -165,11 +165,6 @@
             </a>
           </li>
           <li>
-            <a href="/soalMain" class="{{($title==='training' && $subTitle==='soal') ? 'active':''}}">
-              <i class="bi bi-circle"></i><span>Bank Soal</span>
-            </a>
-          </li>
-          <li>
             <a href="/tr-taf" class="{{($title==='training' && $subTitle==='taf') ? 'active':''}}">
               <i class="bi bi-circle"></i><span>TAF</span>
             </a>
@@ -194,6 +189,29 @@
           </li>
         </ul>
       </li><!-- End Tables Nav -->
+
+      <li class="nav-item">
+        <a class="nav-link {{($title==='Bank Soal') ? '':'collapsed'}}" data-bs-target="#soal-nav" data-bs-toggle="collapse" href="#">
+          <i class="bi bi-journal-text"></i><span>Bank Soal</span><i class="bi bi-chevron-down ms-auto"></i>
+        </a>
+        <ul id="soal-nav" class="nav-content collapse {{($title==='Bank Soal') ? 'show':''}} " data-bs-parent="#sidebar-nav">
+          <li>
+            <a href="/soalMain" class="{{($title==='Bank Soal' && $subTitle==='Daftar Soal') ? 'active':''}}">
+              <i class="bi bi-circle"></i><span>Bank Soal</span>
+            </a>
+          </li>
+          <li>
+            <a href="/soalNew" class="{{($title==='Bank Soal' && $subTitle==='New Soal') ? 'active':''}}">
+              <i class="bi bi-circle"></i><span>New Soal</span>
+            </a>
+          </li>
+          <li>
+            <a href="/soalEvent" class="{{($title==='Bank Soal' && $subTitle==='Event List') ? 'active':''}}">
+              <i class="bi bi-circle"></i><span>Event</span>
+            </a>
+          </li>
+        </ul>
+      </li><!-- End Forms Nav -->
 
       <li class="nav-item">
         <a class="nav-link collapsed" data-bs-target="#charts-nav" data-bs-toggle="collapse" href="#">

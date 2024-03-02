@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\manpower;
 use App\Models\trainingMatrix;
 use App\Models\trainingPeserta;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
 
@@ -284,6 +285,75 @@ class trainingReadinessController extends Controller
             $data[]=$mandatory;
         }
         return json_encode($data);
+    }
+
+    public function readinessAllStafForExcel(Request $request){
+        if($request->code!="bbw"){
+            return response(null,404);
+        }
+        $hasil=[];
+        $stafs=manpower::manpowerAll()
+        ->where('jabatanStr','GROUP LEADER')
+        ->where('status','AKTIF')
+        ->where('manpowers.perusahaan','1')
+        ->orWhere(function($query){
+            $query->where('jabatanStr','UNIT HEAD')
+            ->where('status','AKTIF')
+            ->where('manpowers.perusahaan','1');
+        })
+        ->get();
+
+        $recordTrainings=trainingPeserta::recordTraining()
+                            ->where('manpowers.jabatanStr','GROUP LEADER')
+                            ->orWhere('manpowers.jabatanStr','UNIT HEAD')
+                            ->get();
+        foreach ($stafs as $vStaf) {
+            $mandatorys=trainingMatrix::where('jabatan',$vStaf->jabatanFn)->get();
+            if(count($mandatorys)>0){
+             $cekTraining=$this->cekTrainings($mandatorys, $vStaf, $recordTrainings);
+             $hasil[]=$cekTraining;
+            }
+        }
+
+        return json_encode($hasil);
+    }
+
+    private function cekTrainings($mandatorys,$staff,$trainings){
+        $hasil=[];
+        $trainingOpen='';
+        $trainingClose='';
+        $openInt=0;
+        $closeInt=0;
+        foreach ($mandatorys as $vMandatory) {
+            foreach ($trainings as $vTraining) {
+                $found=false;
+                if($vMandatory->mandatory===$vTraining->trainingPrefixStaff && $staff->nrp===$vTraining->nrp){
+                    $found=true;
+                    $closeInt++;
+                    $trainingClose===''?$trainingClose=$vMandatory->mandatory:$trainingClose=$trainingClose.', '.$vMandatory->mandatory;
+                    break;
+                }
+            }
+
+            if(!$found){
+                $openInt++;
+                $trainingOpen===''?$trainingOpen=$vMandatory->mandatory:$trainingOpen=$trainingOpen.', '.$vMandatory->mandatory;
+            }
+            
+        }
+        $hasil=[
+            'nrp'=>$staff->nrp,
+            'nama'=>$staff->nama,
+            'jabatanStr'=>$staff->jabatanStr,
+            'jabatanFn'=>$staff->jabatanFn,
+            'jobArea'=>$staff->jobArea,
+            'openInt'=>$openInt,
+            'closeInt'=>$closeInt,
+            'open'=>$trainingOpen,
+            'close'=>$trainingClose,
+            'ach'=>round($closeInt/($closeInt+$openInt)*100,2)
+        ];
+        return $hasil;
     }
 }
 
