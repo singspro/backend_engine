@@ -8,6 +8,7 @@ use App\Http\Controllers\logOutController;
 use App\Http\Controllers\manpowerController;
 use App\Http\Controllers\mentorController;
 use App\Http\Controllers\trainingController;
+use App\Http\Controllers\shortUrlController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -72,6 +73,7 @@ Route::get('/showResult',[trainingController::class,'pengerjaan'])->middleware('
 
 
 
+
 // halaman training TAF
 Route::get('/ixx',[trainingController::class,'newTaf'])->middleware('auth');
 Route::post('/tafNewSave',[trainingController::class,'newTafSave'])->middleware('auth');
@@ -101,6 +103,14 @@ Route::post('/kocok',[mentorController::class,'deleteMentor'])->middleware('auth
 Route::get('/soal',[bankSoal::class,'soal']);
 Route::get('/imgQuestions',[trainingController::class,'soalImg'])->middleware('auth');
 Route::post('/imgSend',[trainingController::class,'soalImageSend'])->middleware('auth');
+
+
+//short url
+Route::get('/shrotUrl',[shortUrlController::class,'urlpendek'])->middleware('auth');
+Route::get('/newShortUrl',[shortUrlController::class,'newShortGuys'])->middleware('auth');
+Route::delete('/deleteUrl',[shortUrlController::class,'deleteUrlGuys'])->middleware('auth');
+Route::post('/submitNewShort',[shortUrlController::class,'submitNew'])->middleware('auth');
+Route::get('/link_{slug}',[shortUrlController::class,'redirectGuys']);
 
 
 //Test apis

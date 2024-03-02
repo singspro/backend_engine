@@ -231,6 +231,24 @@
         </ul>
       </li><!-- End Charts Nav -->
 
+      <li class="nav-item">
+        <a class="nav-link {{($title==='Shorten URL') ? '':'collapsed'}}" data-bs-target="#shortenUrl" data-bs-toggle="collapse" href="#">
+          <i class="bi bi-journal-text"></i><span>Shorten Your URL's</span><i class="bi bi-chevron-down ms-auto"></i>
+        </a>
+        <ul id="shortenUrl" class="nav-content collapse {{($title==='Shorten URL') ? 'show':''}} " data-bs-parent="#sidebar-nav">
+          <li>
+            <a href="/shrotUrl" class="{{($title==='Shorten URL' && $subTitle==='URL') ? 'active':''}}">
+              <i class="bi bi-circle"></i><span>Shorten Your URL's</span>
+            </a>
+          </li>
+          <li>
+            <a href="/newShortUrl" class="{{($title==='Shorten URL' && $subTitle==='newURL') ? 'active':''}}">
+              <i class="bi bi-circle"></i><span>New</span>
+            </a>
+          </li>
+        </ul>
+      </li><!-- End Forms Nav -->
+
     </ul>
 
   </aside><!-- End Sidebar-->
