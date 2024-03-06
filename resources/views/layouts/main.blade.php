@@ -192,7 +192,7 @@
 
       <li class="nav-item">
         <a class="nav-link {{($title==='Bank Soal') ? '':'collapsed'}}" data-bs-target="#soal-nav" data-bs-toggle="collapse" href="#">
-          <i class="bi bi-journal-text"></i><span>Bank Soal</span><i class="bi bi-chevron-down ms-auto"></i>
+          <i class="bi bi-puzzle"></i><span>Bank Soal</span><i class="bi bi-chevron-down ms-auto"></i>
         </a>
         <ul id="soal-nav" class="nav-content collapse {{($title==='Bank Soal') ? 'show':''}} " data-bs-parent="#sidebar-nav">
           <li>
@@ -233,7 +233,7 @@
 
       <li class="nav-item">
         <a class="nav-link {{($title==='Shorten URL') ? '':'collapsed'}}" data-bs-target="#shortenUrl" data-bs-toggle="collapse" href="#">
-          <i class="bi bi-journal-text"></i><span>Shorten Your URL's</span><i class="bi bi-chevron-down ms-auto"></i>
+          <i class="bi bi-link-45deg"></i><span>Shorten Your URL's</span><i class="bi bi-chevron-down ms-auto"></i>
         </a>
         <ul id="shortenUrl" class="nav-content collapse {{($title==='Shorten URL') ? 'show':''}} " data-bs-parent="#sidebar-nav">
           <li>

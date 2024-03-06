@@ -170,6 +170,7 @@ Route::get('/mpTest',[bankSoal::class,'dataOrangYangTest']);
 Route::post('/ansSubmit',[bankSoal::class,'kumpulkanTest']);
 Route::get('/xnxx',[bankSoal::class,'imageSoal']);
 Route::get('/getHasilTest',[bankSoal::class,'hasilTest']);
+Route::get('/getEvtInfo',[bankSoal::class,'getEvtInfoGass']);
 
 
 

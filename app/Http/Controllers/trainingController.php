@@ -54,16 +54,18 @@ class trainingController extends Controller
 
         $jenis=array_unique($jenis);
 
-        foreach ($hasilJawabanJenis3 as $vHasilJawabanJenis3) {
-            $q[]=$vHasilJawabanJenis3->idSoalIsi;
+        if($hasilJawabanJenis3->first()){
+            foreach ($hasilJawabanJenis3 as $vHasilJawabanJenis3) {
+                $q[]=$vHasilJawabanJenis3->idSoalIsi;
+            }
+            $q=array_unique($q);
+            
+            foreach ($q as $vq) {
+                $soalSatuan=$this->ambilDataSoalSatuan($vq,$request->d,3);
+                $h[]=$soalSatuan;
+            }
+            
         }
-        $q=array_unique($q);
-
-        foreach ($q as $vq) {
-            $soalSatuan=$this->ambilDataSoalSatuan($vq,$request->d,3);
-            $h[]=$soalSatuan;
-        }
-
         foreach ($hasilJawaban as $vHasilJawaban) {
             $soalSatuan=$this->ambilDataSoalSatuan($vHasilJawaban->idSoalIsi,$request->d,$vHasilJawaban->jenis);
             $soalSatuan['dijawab']=$vHasilJawaban->jawaban;

@@ -8,6 +8,24 @@ use Illuminate\Support\Facades\Auth;
 
 class dashboardController extends Controller
 {
+    public function getDataGuys(Request $request){
+        $ss=[];
+        switch ($request->data) {
+            case 'levelMechanicAllChart':
+                $ss=$this->mechanicGradeData();
+                break;
+            case 'spclComposition':
+                $ss=$this->mechanicSpclData();
+                break;
+            default:
+                # code...
+                break;
+        }
+        return response()->json([
+            'status'=>'ok',
+            'data'=>$ss,
+        ],200);
+    }
     public function dashboard(){
         return view('index',[
             'title'=>'dashboard',
@@ -74,6 +92,72 @@ class dashboardController extends Controller
             'subData'=>""
         ]);
     }
+
+//-------------------------------------------------------------------------------------------------------------------//
+//-------------------------------------------------------------------------------------------------------------------//
+//-------------------------------------------------------------------------------------------------------------------//
+//-------------------------------------------------------------------------------------------------------------------//
+
+private function mechanicSpclData(){
+    $hasil=[];
+    $spesialis=[];
+    $jumlah=[];
+    $data=manpower::manpowerAll()->where('status','AKTIF') 
+                                ->where('manpowers.perusahaan',1)
+                                ->where('jabatanStr','MECHANIC')
+                                ->where('spesialis','!=','-')
+                                ->where('spesialis','!=','')
+                                ->get();
+    foreach ($data as $vData) {
+        $spcls[]=$vData->spesialis;
+    }
+    $spcls=array_unique($spcls);
+
+    foreach ($spcls as $vSpcls) {
+        $cc=0;
+        foreach ($data as $vData) {
+            if($vSpcls===$vData->spesialis){
+                $cc++;
+            }
+        }
+        
+            $spesialis[]=$vSpcls;
+            $jumlah[]=$cc;
+    }
+    
+    array_multisort($jumlah,SORT_DESC,$spesialis,SORT_ASC);
+    foreach ($jumlah as $key => $vJumlah) {
+        $hasil[]=[
+            'spcl'=>$spesialis[$key],
+            'jmlh'=>$vJumlah
+        ];
+    }
+    return $hasil;
+    
+}
+private function mechanicGradeData(){
+    $grade=['L1','L2','L3','L4','L5','L6','L7','L8','L9','L10'];
+    $hasil=[];
+    $data=manpower::manpowerAll()->where('status','AKTIF') 
+                                ->where('manpowers.perusahaan',1)
+                                ->where('jabatanStr','MECHANIC')
+                                ->where('spesialis','!=','-')
+                                ->where('spesialis','!=','')
+                                ->get();
+    foreach ($grade as $vg) {
+        $cc=0;
+        foreach ($data as $vData) {
+            if($vg===$vData->grade){
+                $cc++;
+            }
+        }
+        $hasil[]=[
+            'grade'=>$vg,
+            'jumlah'=>$cc
+        ];
+    }
+    return $hasil;
+}
 public function countManpower($jabatanStr, $status, $perusahaan,$section){
     $data=manpower::where('jabatanStr',$jabatanStr)
                     ->where('status',$status)

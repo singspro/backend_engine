@@ -243,7 +243,7 @@ $(document).ready(async function(){
             f:formData.get('acakMc'),
             g:formData.get('acakTf'),
             h:formData.get('acakMatch'),
-            i:formData.get('balancedCheck'),
+            i:formData.get('balancedCheck2')==='1'?'on':formData.get('balancedCheck'),
             j:formData.get('bobotMc'),
             k:formData.get('bobotTf'),
             l:formData.get('bobotMatch'),
@@ -252,8 +252,9 @@ $(document).ready(async function(){
             o:document.getElementById('idSoalUtama').value
           }
         }
+        console.log(d);
         try {
-          // console.log(JSON.stringify(d));
+          
           let a=await getData(JSON.stringify(d));
           if(a.status==='error'){
             submitSpinnerEventReset(b);
@@ -437,7 +438,7 @@ $(document).ready(async function(){
             <label class="form-check-label" >Langsung release nilai (nilai muncul setelah di submit)</label>
           </div>
           <div class="form-check form-switch">
-            <input class="form-check-input" type="checkbox" name='bahasCheck' role="switch" ${ (this.q.bahas)?'checked':'' }> 
+            <input class="form-check-input" type="checkbox" name='bahasCheck' role="switch" ${ (this.q.bahas)?'checked':'' } disabled> 
             <label class="form-check-label" >Bahas soal setelah submit (tunjukkan jawaban benar)</label>
           </div>
   
@@ -452,6 +453,7 @@ $(document).ready(async function(){
               <hr/>
               <div class="form-check">
                 <input class="form-check-input" type="checkbox" name='balancedCheck' onClick="balancedClick(this)" id="balancedCheck" ${ (this.q.bobot.balanced)?'checked':''} ${ (this.balancedDis()===1) ?'disabled' :''}>
+                <input type="hidden" name="balancedCheck2" value="${this.balancedDis()}"/>
                 <label class="form-check-label" for="flexCheckChecked">
                   Balanced
                 </label>

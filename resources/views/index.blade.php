@@ -166,10 +166,43 @@
 
     <section>
       <div class="row">
+        <div class="col-lg-12">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">Mechanic Grade Compositon</h5>
+              <!-- Donut Chart -->
+              <canvas id="gradeMechanicChart" style="max-height: 400px;"></canvas>
+              {{-- <div>
+                <h5><span class="spinner-border text-primary"></span> Loading....</h5>
+              </div> --}}
+            </div>
+          </div>
+        </div>
+      </div>   
+    </section>
+    <section>
+      <div class="row">
+        <div class="col-lg-12">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">Mechanic Spcl Compositon</h5>
+              <!-- Donut Chart -->
+              <canvas id="spclMechanicComposition" style="max-height: 400px;"></canvas>
+              {{-- <div>
+                <h5><span class="spinner-border text-primary"></span> Loading....</h5>
+              </div> --}}
+            </div>
+          </div>
+        </div>
+      </div>   
+    </section>
+
+    <section>
+      <div class="row">
         <div class="col-lg-4">
           <div class="card">
             <div class="card-body">
-              <h5 class="card-title">Readiness Training</h5>
+              <h5 class="card-title">Mechanic Training Readiness</h5>
               <!-- Donut Chart -->
               <canvas id="achReadiness" style="max-height: 400px;"></canvas>
               <div>
@@ -178,11 +211,7 @@
             </div>
           </div>
         </div>
-      </div>
-
-      
-    
-
+      </div>   
     </section>
 
     @endsection
@@ -278,10 +307,142 @@
     //   achReadinessTrainingChart.toggleDataVisibility(points[0].index); // hides dataset at index 1
     //   achReadinessTrainingChart.update(); // chart now renders with dataset hidden
     // }
+    
+    function getData(d){
+      $.ajaxSetup({
+        headers: {
+          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+      });
 
+      return $.ajax({
+        type: 'GET',
+        data:{data:d},
+        url:'/dataDashboard',})
+    }
+    async function gradeMachanicChart(){
+      try {
+        let res =await getData('spclComposition')
+        if(res.status !='ok'){
+          console.log(res)
+        }else{
+          dataJadi={
+            spcl:[],
+            jmlh:[]
+          }
+          aa=res.data;
+          console.log(aa);
+          aa.forEach(eAa => {
+            dataJadi.spcl.push(eAa.spcl);
+            dataJadi.jmlh.push(eAa.jmlh);
+          });
+          chartSpcl(dataJadi);
+        }
+      } catch (err) {
+        
+      }
+    }
+    async function levelMechanicChart(){
+      try {
+        let res=await getData('levelMechanicAllChart');
+        console.log(res);
+        if(res.status !='ok'){
+          console.log('error data');
+        }else{
+          dataJadi={
+            grade:[],
+            jml:[],
+          };
+          q=res.data;
+          q.forEach(eq => {
+            dataJadi.grade.push(eq.grade);
+            dataJadi.jml.push(eq.jumlah)
+          });
+          chartLevel(dataJadi);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+
+    }
+
+
+
+    function chartSpcl(d){    
+      const data = {
+        labels: d.spcl,
+        datasets: [{
+          // label:d.jml,
+          data: d.jmlh,
+          borderWidth: 1
+        }]
+      };
+      let chart = new Chart(document.getElementById('spclMechanicComposition'),
+      {
+        
+        type: 'bar',
+        data: data,
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+            
+          },
+          plugins:{
+      
+              legend:{
+                display:false
+              },
+              tooltip:{
+                enabled:true
+              }
+            
+          }
+        }
+      })
+    }
+
+    
+    function chartLevel(d){      
+      const data = {
+        labels: d.grade,
+        datasets: [{
+          // label:d.jml,
+          data: d.jml,
+          borderWidth: 1
+        }]
+      };
+      let chart = new Chart(document.getElementById('gradeMechanicChart'),
+      {
+        
+        type: 'bar',
+        data: data,
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+            
+          },
+          plugins:{
+      
+              legend:{
+                display:false
+              },
+              tooltip:{
+                enabled:true
+              }
+            
+          }
+        }
+      })
+    }
 
     // //-----------------------------------------------------------------------//
     $(document).ready( function(){
+      levelMechanicChart();
+      gradeMachanicChart();
       getDataAchReadinessTraining();
       // achReadinessChart.onclick=AchReadinessTrainingClick;
       });    
