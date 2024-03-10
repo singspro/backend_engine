@@ -2,6 +2,7 @@
 
 
 use App\Http\Controllers\bankSoal;
+use App\Http\Controllers\readinessKompetensiController;
 use App\Http\Controllers\trainingReadinessController;
 use App\Models\manpower;
 use App\Models\ojiReport;
@@ -171,6 +172,12 @@ Route::post('/ansSubmit',[bankSoal::class,'kumpulkanTest']);
 Route::get('/xnxx',[bankSoal::class,'imageSoal']);
 Route::get('/getHasilTest',[bankSoal::class,'hasilTest']);
 Route::get('/getEvtInfo',[bankSoal::class,'getEvtInfoGass']);
+
+Route::get('/getReadinessComp',[readinessKompetensiController::class,'getQtyReadiness']);
+Route::get('/getReadinessCompOpen',[readinessKompetensiController::class,'getReadinessOpen']);
+
+//Cek Api ------//
+Route::get('/cek',[readinessKompetensiController::class,'getReadinesMentahan']);
 
 
 

@@ -116,5 +116,5 @@ Route::get('/link_{slug}',[shortUrlController::class,'redirectGuys']);
 
 //Test apis
 
-Route::get('/test',[Controller::class,'test'])->middleware('auth');
+// Route::get('/test',[Controller::class,'test'])->middleware('auth');
 

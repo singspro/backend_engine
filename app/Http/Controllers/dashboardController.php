@@ -17,6 +17,25 @@ class dashboardController extends Controller
             case 'spclComposition':
                 $ss=$this->mechanicSpclData();
                 break;
+            case 'compReadiness':
+                $comp=new readinessKompetensiController();
+                $qtyComp=$comp->getQtyReadinessLocale();
+                $ss=$this->hitungAllProsentase($qtyComp);
+                break;
+            case 'getAllReadiness':
+                $comp=new readinessKompetensiController();
+                $tr=new trainingReadinessController();
+                $qtyComp=$comp->getQtyReadinessLocale();
+                $qtyTr=$tr->readinessAll();
+                $comp=$this->hitungAllProsentase($qtyComp);
+                $tr=$this->hitungAllProsentase($qtyTr);
+                $ss=
+                [
+                  'comp'=>$comp,
+                   'tr'=>$tr,
+                   'mR'=>round(($comp['closePer']+$tr['closePer'])/2,2),
+                ];
+                break;
             default:
                 # code...
                 break;
@@ -97,7 +116,21 @@ class dashboardController extends Controller
 //-------------------------------------------------------------------------------------------------------------------//
 //-------------------------------------------------------------------------------------------------------------------//
 //-------------------------------------------------------------------------------------------------------------------//
+private function hitungAllProsentase($d){
+    $open=0;
+    $close=0;
+    foreach ($d as $vD) {
+        $open=$open+$vD['open'];
+        $close=$close+$vD['close'];
+    }
 
+    return [
+        'open'=>$open,
+        'close'=>$close,
+        'openPer'=>($open+$close===0)? 0 : round($open/($open+$close)*100,2),
+        'closePer'=>($open+$close===0)? 0 : round($close/($open+$close)*100,2),
+    ];
+}
 private function mechanicSpclData(){
     $hasil=[];
     $spesialis=[];

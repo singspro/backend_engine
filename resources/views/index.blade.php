@@ -202,10 +202,36 @@
         <div class="col-lg-4">
           <div class="card">
             <div class="card-body">
-              <h5 class="card-title">Mechanic Training Readiness</h5>
+              <h6 class="card-title">Mechanic Readiness</h6>
+              <p>--</p>
+              <canvas id="mechanicReadiness" style="max-height: 400px;"></canvas>
+              <div id="spinnerDoughnatMr">
+                <h5><span class="spinner-border text-primary"></span> Loading....</h5>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <div class="card">
+            <div class="card-body">
+              <h6 class="card-title">Mech. Training Readiness</h6>
+              <p>Knowledge</p>
               <!-- Donut Chart -->
-              <canvas id="achReadiness" style="max-height: 400px;"></canvas>
-              <div>
+              <canvas id="achTrainingReadiness" style="max-height: 400px;"></canvas>
+              <div id="spinnerDoughnatTr">
+                <h5><span class="spinner-border text-primary"></span> Loading....</h5>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <div class="card">
+            <div class="card-body">
+              <h6 class="card-title">Mech. Competency Readiness</h6>
+              <p>Skill</p>
+              <!-- Donut Chart -->
+              <canvas id="compReadinessChart" style="max-height: 400px;"></canvas>
+              <div id="spinnerDoughnatComp">
                 <h5><span class="spinner-border text-primary"></span> Loading....</h5>
               </div>
             </div>
@@ -218,96 +244,7 @@
 
 @push('scripts')
   <script>
-    const achReadinessChart=document.getElementById('achReadiness');
-    const achAllReadinessChartConfig={
-      type: 'doughnut',
-      data: {
-              labels: [
-                        `Close: loading...`,
-                        `Open: loading...`
-                      ],
-              datasets: [{
-                          label: 'Readiness Training',
-                          data: [0, 100],
-                          backgroundColor: [
-                            'rgb(230, 230, 230)',
-                            'rgb(230, 230, 230)'  
-                          ],
-                          hoverOffset: 4
-                        }]
-            },
-      setting:function(x,y){
-              let pOpen=(x/(x+y)*100).toFixed(2);
-              let pClose=(y/(x+y)*100).toFixed(2);
-              this.data.labels=[
-                `Close: ${pClose} %`,
-                `Open: ${pOpen} %`
-              ];
-              this.data.datasets=[
-                {
-                  label: 'Readiness Training',
-                  data: [y, x],
-                  backgroundColor: [
-                            'rgb(54, 162, 235)',
-                            'rgb(237, 50, 55)'  
-                          ],
-                  hoverOffset: 4
-                }
-              ]
-              }
-    }
-
-    const achReadinessTrainingChart=new Chart(achReadinessChart,achAllReadinessChartConfig);
-
-    const readinessTraining={
-      ach:function(){
-          let open=0;
-          let close=0;
-          let ach=0;
-          // console.log(this.filter.length);
-          this.allData.forEach(dd => {
-            let hitung=false;
-            if(this.filter.length>0){
-              this.filter.forEach(ff => {
-                if(dd[ff.filter]===ff.value){
-                  hitung=true;
-                }else{
-                  hitung=false;
-                }
-              });
-            }else{
-              hitung=true;
-            }
-
-            if(hitung===true){
-              close+=dd.close;
-              open+=dd.open;
-            }
-          });
-          ach=(close/(open+close)*100).toFixed(2);
-          return {
-            open:open,
-            close:close,
-            ach:ach
-          }
-          },
-      filter:[],
-      allData:[],
-    }
-
-    function updateChartAchReadiness(x,y){
-      achAllReadinessChartConfig.setting(x,y);
-      achReadinessTrainingChart.update();
-    }
-
-
-    // function AchReadinessTrainingClick(click){
-    //   const points = achReadinessTrainingChart.getElementsAtEventForMode(click, 'nearest', { intersect: true }, true);
-    //   // console.log(points[0].index);
-    //   achReadinessTrainingChart.toggleDataVisibility(points[0].index); // hides dataset at index 1
-    //   achReadinessTrainingChart.update(); // chart now renders with dataset hidden
-    // }
-    
+  
     function getData(d){
       $.ajaxSetup({
         headers: {
@@ -320,6 +257,31 @@
         data:{data:d},
         url:'/dataDashboard',})
     }
+
+
+    async function getAllMechanicReadiness(){
+      try {
+        let res =await getData('getAllReadiness')
+        if(res.status !='ok'){
+          console.log(res)
+        }else{
+          let dd=res.data;
+          chartMechanicReadiness(dd.mR);
+          chartTrainingReadiness(dd.tr);
+          chartCompReadiness(dd.comp);
+          let spin1=document.getElementById('spinnerDoughnatMr');
+          let spin2=document.getElementById('spinnerDoughnatTr');
+          let spin3=document.getElementById('spinnerDoughnatComp');
+          spin1.innerHTML='';
+          spin2.innerHTML='';
+          spin3.innerHTML='';
+          
+        }
+      } catch (err) {
+        
+      }
+    }
+
     async function gradeMachanicChart(){
       try {
         let res =await getData('spclComposition')
@@ -331,7 +293,7 @@
             jmlh:[]
           }
           aa=res.data;
-          console.log(aa);
+          // console.log(aa);
           aa.forEach(eAa => {
             dataJadi.spcl.push(eAa.spcl);
             dataJadi.jmlh.push(eAa.jmlh);
@@ -342,10 +304,12 @@
         
       }
     }
+
+
     async function levelMechanicChart(){
       try {
         let res=await getData('levelMechanicAllChart');
-        console.log(res);
+        // console.log(res);
         if(res.status !='ok'){
           console.log('error data');
         }else{
@@ -364,6 +328,76 @@
         console.log(err);
       }
 
+    }
+
+
+
+    function chartMechanicReadiness(d){    
+      const data = {
+        labels: [
+          `Readiness: ${d}%`
+        ],
+        datasets: [{
+          // label:d.jml,
+          data: [d,(100-d)],
+          borderWidth: 1,
+          backgroundColor: ['#6273f5','#e6e7ed']
+     
+          
+        }]
+      };
+
+      let chart = new Chart(document.getElementById('mechanicReadiness'),
+      {
+        type: 'doughnut',
+        data: data,        
+      })
+    }
+
+
+    function chartTrainingReadiness(d){    
+      const data = {
+        labels: [
+          `Close: ${d.closePer}%`,
+          `Open: ${d.openPer}%`
+        ],
+        datasets: [{
+          // label:d.jml,
+          data: [d.close,d.open],
+          borderWidth: 1,
+          backgroundColor: ['#6273f5','#f2aeae']
+        }]
+      };
+
+
+      let chart = new Chart(document.getElementById('achTrainingReadiness'),
+      {
+        type: 'doughnut',
+        data: data,
+      })
+    }
+
+
+    function chartCompReadiness(d){    
+      const data = {
+        labels: [
+          `Close: ${d.closePer}%`,
+          `Open: ${d.openPer}%`
+        ],
+        datasets: [{
+          // label:d.jml,
+          data: [d.close,d.open],
+          borderWidth: 1,
+          backgroundColor: ['#6273f5','#f2aeae']
+        }]
+      };
+
+
+      let chart = new Chart(document.getElementById('compReadinessChart'),
+      {
+        type: 'doughnut',
+        data: data,
+      })
     }
 
 
@@ -387,19 +421,17 @@
             y: {
               beginAtZero: true
             }
-            
           },
           plugins:{
-      
-              legend:{
-                display:false
-              },
-              tooltip:{
-                enabled:true
-              }
-            
+            legend:{
+              display:false
+            },
+            tooltip:{
+              enabled:true
+            },
           }
-        }
+        },
+        plugins:[ChartDataLabels]
       })
     }
 
@@ -422,20 +454,24 @@
           scales: {
             y: {
               beginAtZero: true
-            }
+            },
             
           },
           plugins:{
-      
-              legend:{
-                display:false
-              },
-              tooltip:{
-                enabled:true
-              }
-            
+            datalabels:{
+              
+            },
+            legend:{
+              display:false
+            },
+            tooltip:{
+              enabled:true
+            },
           }
-        }
+        },
+
+        plugins:[ChartDataLabels]
+
       })
     }
 
@@ -443,30 +479,9 @@
     $(document).ready( function(){
       levelMechanicChart();
       gradeMachanicChart();
-      getDataAchReadinessTraining();
-      // achReadinessChart.onclick=AchReadinessTrainingClick;
+      getAllMechanicReadiness();
       });    
    
-    async function getDataAchReadinessTraining(){
-       try {
-         
-       let data=await     $.ajax({
-            type: 'GET',
-            url:'/api/trainingReadiness',
-
-            });
-        data=JSON.parse(data);
-        // console.log(data);
-        readinessTraining.allData=data;
-        readinessTraining.filter=[]
-        let a=readinessTraining.ach();
-        let sp=achReadinessChart.nextElementSibling;
-        sp.style.display='none';
-       updateChartAchReadiness(a.open,a.close);
-       } catch (error) {
-        console.log(error);
-    }
-   }
   </script>
 @endpush
 
