@@ -1,4 +1,5 @@
 $(document).ready(async function(){
+  document.getElementById('submitEditHeaderSpinner').style.display='none';
     let data={
       handler:'isiSoal',
       id:document.getElementById('idSoalUtama').value,
@@ -13,6 +14,41 @@ $(document).ready(async function(){
     } catch (error) {
       console.log(error);
     }
+
+    $(document).on('submit','#editHeaderForm',async function(e){
+      e.preventDefault();
+      document.getElementById('submitEditHeaderBtn').style.display='none';
+      document.getElementById('submitEditHeaderSpinner').style.display='block';
+      formData=new FormData(this);
+      let dx={
+        handler:'saveEditHeader',
+        data:{
+          judul:formData.get('judul'),
+          author:formData.get('author'),
+          revisi:formData.get('revisi'),
+          idSoalUtama:formData.get('idSoalUtama')
+        }
+      }
+      dx=JSON.stringify(dx);
+      try {
+        res= await getData(dx);
+        if(res.status==='success'){
+          location.reload();
+        }else{
+          document.getElementById('submitEditHeaderBtn').style.display='block';
+          document.getElementById('submitEditHeaderSpinner').style.display='none';
+          let al=document.getElementById('alertEditHeaderModal');
+          al.innerHTML=`<div class="mb-3">
+          <div class="alert alert-danger" role="alert">
+            Ada field yang masih kosong, Mohon diisi
+          </div>
+        </div>`;
+        }
+      } catch (error) {
+        
+      }
+
+    })
   
     $(document).on('click','#del',function(){
       document.getElementById('isiSoalDelete').innerHTML=$(this).data('isi');
@@ -1874,9 +1910,8 @@ $(document).ready(async function(){
         }
       }
     }
-    
-              
-  
+
+            
     function getData(data){
         $.ajaxSetup({
           headers: {

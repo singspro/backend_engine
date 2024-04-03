@@ -10,6 +10,7 @@
         <div class="col-sm-6">
             <div class="position-static">
               <div class="position-absolute top-0 end-0 mt-3 me-3">
+                <button data-bs-toggle="modal" data-bs-target="#editHeaderModal" type="button" class="btn btn-success" title="edit"><i class="bi bi-wrench"></i></button>
                 <button id="generateEvtBtn" class="btn btn-primary bi bi-wifi" title="Generate Event" type="button"></button>
               </div>
             </div>
@@ -17,7 +18,7 @@
       </div>
 
       <div class="row">
-        <div class="col-lg-6">          
+        <div class="col-lg-12">          
           <div class="row mb-3">
             <div class="col-lg-3 label "><strong>Judul</strong></div>
             <div class="col-lg-9">{{$dataUtama->first()->judul}}</div>
@@ -43,11 +44,8 @@
             <div id="matcQty" class="col-lg-2">20</div>
           </div>
         </div>
-
-        <div class="col-lg-6">
-        </div>
-       
       </div>
+
       <input id="idSoalUtama" type="hidden" value="{{$dataUtama->first()->idSoalUtama}}">
       <input type="hidden" id="blankImgPath" value="{{$blankImgPath}}">
       <input type="hidden" id="blankImgMatchingPathB" value="{{$blankImgPathMatchingB}}">
@@ -111,6 +109,48 @@
   </div>
 </div>
 
+
+<!-- Modal -->
+<div class="modal fade" id="editHeaderModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Edit Header</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id ='editHeaderForm' enctype="multipart/form-data">
+          <div class="mb-3">
+            <label for="judulSoal" class="form-label">Judul</label>
+            <input name="judul" type="text" class="form-control" id="judulSoal" placeholder="isiJudul" value="{{$dataUtama->first()->judul}}">
+          </div>
+          <div class="mb-3">
+            <label for="authorSoal" class="form-label">Author</label>
+            <input name="author" type="text" class="form-control" id="authorSoal" placeholder="isi Pembuat Soal" value="{{$dataUtama->first()->author}}">
+          </div>
+          <div class="mb-3">
+            <label for="revisiSoal" class="form-label">Revisi</label>
+            <input name="revisi" type="number" class="form-control" id="revisiSoal" placeholder="Isi Revisi" value="{{$dataUtama->first()->revisi}}">
+          </div>
+          <input name="idSoalUtama" type="hidden" value="{{$dataUtama->first()->idSoalUtama}}">
+          <div id="alertEditHeaderModal"></div>
+          
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancle</button>
+          <button id="submitEditHeaderBtn" type="submit" class="btn btn-primary">Save Edit</button>
+          <button id="submitEditHeaderSpinner" class="btn btn-primary" type="button" disabled>
+            <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+            <span role="status">Loading...</span>
+          </button>
+        </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 <!-- Modal new Soal Multiple Choice-->
 <div id="modalDelete"></div>
 <div id="modalMc"></div>
@@ -122,6 +162,6 @@
 
 @push('scripts')
 <script src="assets/js/qrcode.min.js"> </script>
-<script src="assets/js/bankSoalDetail.js"> </script>
+<script src="assets/js/bankSoalDetail.js"></script>
 @endpush
 

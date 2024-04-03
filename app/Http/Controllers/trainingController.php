@@ -36,6 +36,12 @@ use App\Models\trainingPeserta;
 
 class trainingController extends Controller
 {
+    // $cekValidation=Validator::make($request->all(),$this->newSoal1Validator(),$this->newSoal1ValidatorMsg());
+    // if ($cekValidation->fails()){
+    //     return redirect('/soalNew')
+    //                 ->withErrors($cekValidation)
+    //                 ->withInput();  
+    // }
     public function pengerjaan(Request $request){
         // $soalSatuan=$this->ambilDataSoalSatuan('soalIsi65dd3ba7d41bb',3);
         // dd($soalSatuan);
@@ -97,8 +103,14 @@ class trainingController extends Controller
 
     public function eventDetailGass(Request $request){
         $d=[];
-        $hasilPeserta=bankSoalHasilPeserta::where('kodeEvent',$request->d)->get();
+        $hasilPeserta=bankSoalHasilPeserta::where('kodeEvent',$request->d)->orderBy('nilai','desc')->get();
         $event=bankSoalEvent::where('kodeEvent',$request->d)->get();
+        $jumlahSoal=[
+            'mc'=>$event->first()->jmlSoal1,
+            'tf'=>$event->first()->jmlSoal2,
+            'match'=>$event->first()->jmlSoal3
+        ];
+      
         if($event->first()->soalUmum===1){
             foreach ($hasilPeserta as $vHasilPerserta) {
                 $d[]=[
@@ -127,12 +139,14 @@ class trainingController extends Controller
                 ];
             }
         }
-
+        
         return view('training-bankSoalHasilEvent',[
             'title'=>'Bank Soal',
             'subTitle'=>'Event List',
             'user'=>Auth::user(),
             'data'=>$d,
+            'evt'=>$event->first(),
+            'jumlahSoal'=>$jumlahSoal
         ]);
     }
 
@@ -604,6 +618,10 @@ class trainingController extends Controller
                 ];
                }
                 break;
+                case 'saveEditHeader':
+                    $b=$this->saveEditHeaderOperation($handler);
+                    $data=$b;
+                    break;
             default:
                 # code...
                 break;
@@ -736,6 +754,33 @@ class trainingController extends Controller
     // callback function---------------------------------------------------------------------
     // callback function---------------------------------------------------------------------
 
+    private function saveEditHeaderOperation($data){
+        $validation=validator::make([
+            'judul'=>$data->data->judul,
+            'author'=>$data->data->author,
+            'revisi'=>$data->data->revisi
+        ],[
+            'judul'=>'Required',
+            'author'=>'Required',
+            'revisi'=>'Required'
+        ]);
+        if($validation->fails()){
+            return [
+                'status'=>'error',
+                'data'=>$validation->errors()
+            ];
+        }
+
+        bankSoalUtama::where('idSoalUtama',$data->data->idSoalUtama)->update([
+            'judul'=>$data->data->judul,
+            'author'=>$data->data->author,
+            'revisi'=>$data->data->revisi
+        ]);
+        return [
+            'status'=>'success'
+        ];
+
+    }
     private function newSoal1Validator(){
         return [
             'judul'=>['Required'],
@@ -759,6 +804,10 @@ class trainingController extends Controller
         $date=new DateTime(date('Y-m-d H:i:s'));
         $date->add(new DateInterval('PT2H'));
 
+        $soal1=bankSoalIsi::where('idSoalUtama',$handler->data->o)->where('jenisSoal',1)->get();
+        $soal2=bankSoalIsi::where('idSoalUtama',$handler->data->o)->where('jenisSoal',2)->get();
+        $soal3=bankSoalIsi::where('idSoalUtama',$handler->data->o)->where('jenisSoal',3)->get();
+
         bankSoalEvent::create([
             'kodeEvent'=>$kodeEvent,
             'idSoalUtama'=>$handler->data->o,
@@ -777,6 +826,9 @@ class trainingController extends Controller
             'bobotMatch'=>(int)$handler->data->l,
             'batasiMc'=>(int)$handler->data->m,
             'batasiTf'=>(int)$handler->data->n,
+            'jmlSoal1'=>count($soal1),
+            'jmlSoal2'=>count($soal2),
+            'jmlSoal3'=>count($soal3),
             'remark'=>'',
             'validUntil'=>$date,
         ]);

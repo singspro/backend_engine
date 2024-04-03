@@ -7,6 +7,122 @@
 <div class="card">
   <div class="card-body">
     <h5 class="card-title">Event Result</h5>
+    <div class="row list-cuk">
+      <div class="col-sm-12">
+        <hr>
+        <div class="row">
+          <div class="col-lg-3 col-md-4 label ">Judul Event</div>
+          <div class="col-lg-9 col-md-8">{{$evt->judul}}</div>
+        </div>
+
+        <div class="row">
+          <div class="col-lg-3 col-md-4 label ">Creator</div>
+          <div class="col-lg-9 col-md-8">{{$evt->creator}}</div>
+        </div>
+
+        <div class="row">
+          <div class="col-lg-3 col-md-4 label ">Create Date</div>
+          <div class="col-lg-9 col-md-8">{{$evt->created_at}}</div>
+        </div>
+        <div class="row">
+          <div class="col-lg-3 col-md-4 label ">Pre/Post</div>
+          <div class="col-lg-9 col-md-8">{{$evt->prePost==='postTest'?'Post Test':'Pre Test'}}</div>
+        </div>
+        <div class="row">
+          <div class="col-lg-3 col-md-4 label ">Buka Soal Untuk Umum</div>
+          <div class="col-lg-9 col-md-8">{{$evt->soalUmum===1?'YES':'NO'}}</div>
+        </div>
+        <div class="row">
+          <div class="col-lg-3 col-md-4 label ">Release Nilai</div>
+          <div class="col-lg-9 col-md-8">{{$evt->nilai===1?'YES':'NO'}}</div>
+        </div>
+        <div class="row">
+          <div class="col-lg-3 col-md-4 label ">Acak Soal Multiple Choice</div>
+          @if ($jumlahSoal['mc']===0)
+          <div class="col-lg-9 col-md-8">-</div>
+          @else
+          <div class="col-lg-9 col-md-8">{{$evt->acakMc===1?'YES':'NO'}}</div>
+          @endif
+        </div>
+        <div class="row">
+          <div class="col-lg-3 col-md-4 label ">Acak Soal True/False</div>
+          @if ($jumlahSoal['tf']===0)
+          <div class="col-lg-9 col-md-8">-</div>
+          @else
+          <div class="col-lg-9 col-md-8">{{$evt->acakTf===1?'YES':'NO'}}</div>
+          @endif
+        </div>
+        <div class="row">
+          <div class="col-lg-3 col-md-4 label ">Acak Soal Matching</div>
+          @if ($jumlahSoal['match']===0)
+          <div class="col-lg-9 col-md-8">-</div>
+          @else
+          <div class="col-lg-9 col-md-8">{{$evt->acakMatch===1?'YES':'NO'}}</div>
+          @endif
+        </div>
+        <hr>
+        <div class="row">
+          <div class="col-lg-3 col-md-4 label ">Bobot</div>
+          <div class="col-lg-9 col-md-8">{{$evt->bobotBalanced===1?'Balanced':'Adjusted'}}</div>
+        </div>
+        <div class="row">
+          <div class="col-lg-3 col-md-4 label ">Bobot Multiple choice</div>
+          @if ($jumlahSoal['mc']===0)
+          <div class="col-lg-9 col-md-8">-</div>
+          @else
+          <div class="col-lg-9 col-md-8">{{$evt->bobotBalanced===1?'-':$evt->bobotMc.'%'}}</div>
+          @endif
+        </div>
+        <div class="row">
+          <div class="col-lg-3 col-md-4 label ">Bobot True/False</div>
+          @if ($jumlahSoal['tf']===0)
+          <div class="col-lg-9 col-md-8">-</div>
+          @else
+          <div class="col-lg-9 col-md-8">{{$evt->bobotBalanced===1?'-':$evt->bobotTf.'%'}}</div>
+          @endif
+        </div>
+        <div class="row">
+          <div class="col-lg-3 col-md-4 label ">Bobot Matching</div>
+          @if ($jumlahSoal['match']===0)
+          <div class="col-lg-9 col-md-8">-</div>
+          @else
+          <div class="col-lg-9 col-md-8">{{$evt->bobotBalanced===1?'-':$evt->bobotMatch.'%'}}</div>
+          @endif
+        </div>
+        <hr>
+        <div class="row">
+          <div class="col-lg-3 col-md-4 label ">Batasi Soal Multiple Choice</div>
+          @if ($jumlahSoal['mc']===0)
+          <div class="col-lg-9 col-md-8">-</div>
+          @else
+            @if ($jumlahSoal['mc']===$evt->batasiMc)
+            <div class="col-lg-9 col-md-8">Tidak Dibatasi</div>
+            @else
+            <div class="col-lg-9 col-md-8">{{$evt->batasiMc}} dari {{$jumlahSoal['mc']}}</div>
+            @endif
+          @endif
+        </div>
+        <div class="row">
+          <div class="col-lg-3 col-md-4 label ">Batasi Soal True/False</div>
+          @if ($jumlahSoal['tf']===0)
+          <div class="col-lg-9 col-md-8">-</div>
+          @else
+          @if ($jumlahSoal['tf']===$evt->batasiTf)
+          <div class="col-lg-9 col-md-8">Tidak Dibatasi</div>
+          @else
+          <div class="col-lg-9 col-md-8">{{$evt->batasiTf}} dari {{$jumlahSoal['tf']}}</div>
+          @endif
+          @endif
+        </div>
+        <hr>
+      </div>
+    </div>
+  </div>
+
+</div>
+<div class="card">
+  <div class="card-body">
+    <h5 class="card-title">Result</h5>
     {{-- <div class="d-flex justify-content-end">
       <form action="/soalSearch">
       <div class="input-group mb-3">
