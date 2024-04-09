@@ -130,6 +130,12 @@
           <span>Dashboard</span>
         </a>
       </li><!-- End Dashboard Nav -->
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="/dv2">
+          <i class="bi bi-grid"></i>
+          <span>Dashboard V2</span>
+        </a>
+      </li><!-- End Dashboard Nav -->
 
       <li class="nav-item">
         <a class="nav-link {{($title==='manpower') ? '':'collapsed'}}" data-bs-target="#components-nav" data-bs-toggle="collapse" href="/mp">

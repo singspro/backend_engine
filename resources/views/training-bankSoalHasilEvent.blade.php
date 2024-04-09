@@ -143,6 +143,7 @@
             <th scope="col">Benar</th>
             <th scope="col">Salah</th>
             <th scope="col">Nilai</th>
+            <th scope="col">Submited</th>
             <th></th>
           </tr>
         </thead>
@@ -157,6 +158,7 @@
             <td>{{$d['benar']}}</td>
             <td>{{$d['salah']}}</td>
             <td>{{$d['nilai']}}</td>
+            <td>{{$d['submited']}}</td>
             <td>
               <a type="button" href="/showResult?d={{$d['token']}}" class="btn btn-primary"><i class="bi bi-list"></i></a>
             </td>

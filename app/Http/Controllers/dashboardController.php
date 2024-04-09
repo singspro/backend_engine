@@ -5,9 +5,18 @@ namespace App\Http\Controllers;
 use App\Models\manpower;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class dashboardController extends Controller
 {
+    public function redirectDv2(){
+
+        $user=Auth::user();
+
+        $token=$user->createToken($user->name.'token')->plainTextToken;
+        $url=env('DASHBOARDV2_URL').'ss/'.$token;
+        return redirect()->away($url);
+    }
     public function getDataGuys(Request $request){
         $ss=[];
         switch ($request->data) {

@@ -27,6 +27,7 @@ Route::get('/',[dashboardController::class,'dashboard'])->middleware('auth');
 Route::get('/somplak',[dashboardController::class,'mechanicData'])->middleware('auth');
 Route::get('/kopiHitam',[dashboardController::class,'listManpowerStatistic'])->middleware('auth');
 Route::get('/dataDashboard',[dashboardController::class,'getDataGuys'])->middleware('auth');
+Route::get('/dv2',[dashboardController::class,'redirectDv2'])->middleware('auth');
 
 
 // halaman login

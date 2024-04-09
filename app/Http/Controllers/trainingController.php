@@ -103,7 +103,7 @@ class trainingController extends Controller
 
     public function eventDetailGass(Request $request){
         $d=[];
-        $hasilPeserta=bankSoalHasilPeserta::where('kodeEvent',$request->d)->orderBy('nilai','desc')->get();
+        $hasilPeserta=bankSoalHasilPeserta::where('kodeEvent',$request->d)->orderBy('nama','desc')->orderBy('updated_at','asc')->get();
         $event=bankSoalEvent::where('kodeEvent',$request->d)->get();
         $jumlahSoal=[
             'mc'=>$event->first()->jmlSoal1,
@@ -122,6 +122,7 @@ class trainingController extends Controller
                     'salah'=>$vHasilPerserta->salah,
                     'nilai'=>$vHasilPerserta->nilai,
                     'token'=>$vHasilPerserta->tokenPeserta,
+                    'submited'=>$vHasilPerserta->updated_at
                 ];
             }
         }else{
@@ -136,6 +137,7 @@ class trainingController extends Controller
                     'salah'=>$vHasilPerserta->salah,
                     'nilai'=>$vHasilPerserta->nilai,
                     'token'=>$vHasilPerserta->tokenPeserta,
+                    'submited'=>$vHasilPerserta->updated_at
                 ];
             }
         }
@@ -1850,6 +1852,7 @@ class trainingController extends Controller
         'lembaga_trainings.lembaga',
         'trainings.idTr')
         ->where('trainings.idTr','=',$id)
+        ->orderBy('training_pesertas.post','desc')
         ->get();
 
         return $manpowerTraining;

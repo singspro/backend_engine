@@ -2,8 +2,10 @@
 
 
 use App\Http\Controllers\bankSoal;
+use App\Http\Controllers\readinessDataLogger;
 use App\Http\Controllers\readinessKompetensiController;
 use App\Http\Controllers\trainingReadinessController;
+use App\Http\Controllers\v1DashboardReadiness;
 use App\Models\manpower;
 use App\Models\ojiReport;
 use App\Models\targetOji;
@@ -176,8 +178,15 @@ Route::get('/getEvtInfo',[bankSoal::class,'getEvtInfoGass']);
 Route::get('/getReadinessComp',[readinessKompetensiController::class,'getQtyReadiness']);
 Route::get('/getReadinessCompOpen',[readinessKompetensiController::class,'getReadinessOpen']);
 
-//Cek Api ------//
-Route::get('/cek',[readinessKompetensiController::class,'getReadinesMentahan']);
+
+//v1 Dashboard-------//
+
+Route::middleware('auth:sanctum')->get('/stats',[v1DashboardReadiness::class,'getDataStats']);
+Route::middleware('auth:sanctum')->get('/server',[v1DashboardReadiness::class,'getDataServer']);
+Route::middleware('auth:sanctum')->get('/resumeRead',[v1DashboardReadiness::class,'getResumeRead']);
+Route::middleware('auth:sanctum')->get('/kecrut',[v1DashboardReadiness::class,'loginDashboard']);
+// Route::post('/apiLogin',[v1DashboardReadiness::class,'Apilogin']);
+
 
 
 
