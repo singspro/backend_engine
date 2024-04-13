@@ -15,7 +15,8 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')->hourly();
         // $schedule->command('app:count-qty-manpower')->everyTwoMinutes();
-        $schedule->command('app:readiness-logger')->everyMinute();
+        $schedule->command('app:readiness-logger')->weekly();
+        $schedule->command('app:manpower-logger')->weekly();
     }
 
     /**

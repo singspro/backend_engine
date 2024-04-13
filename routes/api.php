@@ -2,6 +2,7 @@
 
 
 use App\Http\Controllers\bankSoal;
+use App\Http\Controllers\manpowerLoggerController;
 use App\Http\Controllers\readinessDataLogger;
 use App\Http\Controllers\readinessKompetensiController;
 use App\Http\Controllers\trainingReadinessController;
