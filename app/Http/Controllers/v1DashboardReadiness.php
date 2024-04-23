@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\kodeKompetensi;
 use App\Models\manpower;
+use App\Models\manpowerLogger;
 use App\Models\resumeMechanicReadiness;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
@@ -18,6 +19,24 @@ use App\Models\User;
 
 class v1DashboardReadiness extends Controller
 {
+    public function gradeQty(){
+        $gradeQty=new gradeQty();
+        return response()->json([
+            'data'=>$gradeQty->get()
+        ],200);
+    }
+    public function qtyManpowerLog(){
+        $log=new manpowerLog();
+        return response()->json([
+            'data'=>$log->get()
+        ],200);
+    }
+    public function highestLevelQty(){
+        $level=new highLevel();
+        return response()->json([
+            'data'=>$level->get()
+        ],200);
+    }
     public function loginDashboard(){
         return response()->json([
             'status'=>'ok',
@@ -56,20 +75,20 @@ class v1DashboardReadiness extends Controller
     public function getResumeRead(){
         $t=readinessTraining::readinessTrainingAll();
         $template[]=  [
-                "name"=> "TRAINING READINESS",
-                "total"=> $t['resume']['close'].' / '.$t['resume']['open']+$t['resume']['close']." Tr.",
+                "name"=> "TRAINING R.",
+                "total"=> $t['resume']['close'].' / '.$t['resume']['open']+$t['resume']['close']." T",
                 "progress"=> $t['resume']['ach'].'%',
                 "time"=> "Knowledge",
                 "status"=>"Outstanding",
                 "info"=> [
                     [
-                        "title"=> "HIGHEST",
-                        "value"=> $t['resume']['outStanding']['highest']['spcl'].' ('.$t['resume']['outStanding']['highest']['value'].' Tr.)',
+                        "title"=> "HI",
+                        "value"=> $t['resume']['outStanding']['highest']['spcl'].' ('.$t['resume']['outStanding']['highest']['value'].' T)',
                         "class"=> "text-theme"
                     ],
                     [
-                        "title"=> "LOWEST",
-                        "value"=> $t['resume']['outStanding']['lowest']['spcl'].' ('.$t['resume']['outStanding']['lowest']['value'].' Tr.)',
+                        "title"=> "LO",
+                        "value"=> $t['resume']['outStanding']['lowest']['spcl'].' ('.$t['resume']['outStanding']['lowest']['value'].' T)',
                         "class"=> "text-theme text-opacity-50"
                         ]
                     ],
@@ -83,20 +102,20 @@ class v1DashboardReadiness extends Controller
         $c=readinessCompetency::getQtyReadinessAll();
                 $template[]=  
                     [
-                        "name"=> "COMPETENCY READINESS",
-                        "total"=> $c['resume']['close'].' / '.$c['resume']['open']+$c['resume']['close']." Comp.",
+                        "name"=> "COMPETENCY R.",
+                        "total"=> $c['resume']['close'].' / '.$c['resume']['open']+$c['resume']['close']." C",
                         "progress"=> $c['resume']['ach'].'%',
                         "time"=> "Skill",
                         "status"=>"Outstanding",
                         "info"=> [
                             [
-                                "title"=> "HIGHEST",
-                                "value"=> $c['resume']['outStanding']['highest']['spcl'].' ('.$c['resume']['outStanding']['highest']['value'].' Comp.)',
+                                "title"=> "HI",
+                                "value"=> $c['resume']['outStanding']['highest']['spcl'].' ('.$c['resume']['outStanding']['highest']['value'].' C)',
                                 "class"=> "text-theme"
                             ],
                             [
-                                "title"=> "LOWEST",
-                                "value"=> $c['resume']['outStanding']['lowest']['spcl'].' ('.$c['resume']['outStanding']['lowest']['value'].' Comp.)',
+                                "title"=> "LO",
+                                "value"=> $c['resume']['outStanding']['lowest']['spcl'].' ('.$c['resume']['outStanding']['lowest']['value'].' C)',
                                 "class"=> "text-theme text-opacity-50"
                                 ]
                             ],
@@ -208,15 +227,15 @@ class v1DashboardReadiness extends Controller
                 "info"=> [
                     [
                         "icon"=> "far fa-user fa-fw me-1",
-                        "text"=> $readinessTraining['resume']['ach']."% Training Readiness"
+                        "text"=> $readinessTraining['resume']['ach']."% Training R"
                     ],
                     [
                         "icon"=> "far fa-user fa-fw me-1",
-                        "text"=> $readinessCompetency['resume']['ach'].'% Competency Readiness'
+                        "text"=> $readinessCompetency['resume']['ach'].'% Competency R'
                     ],
                     [
                         "icon"=> "far fa-check-circle fa-fw me-1",
-                        "text"=> round(($readinessTraining['resume']['ach']+$readinessCompetency['resume']['ach'])/2,2)."% Mechanic Readiness"
+                        "text"=> round(($readinessTraining['resume']['ach']+$readinessCompetency['resume']['ach'])/2,2)."% Mechanic R"
                     ],
                     [
                         "icon"=> "far fa-times-circle fa-fw me-1",
@@ -458,5 +477,161 @@ class readinessTraining {
                 return $hasil;
     }
 
+}
+
+class manpowerLog{
+    private function getManpower(){
+        $series=[];
+        $xAxis=[];
+        $data=manpowerLogger::where('perusahaan',1)
+        ->where('jobArea','all')
+        ->where('subSection','all')
+        ->where('jabatan','MECHANIC')
+        ->where('grade','all')
+        ->orderBy('created_at','desc')
+        ->limit(54)
+        ->get(['jumlah','created_at']);
+
+        foreach ($data as $vData) {
+            $series[]=$vData->jumlah;
+            $xAxis[]=date_format($vData->created_at,'M, Y');
+        }
+        $template=[
+            'series'=>[
+                [
+                    'name'=>'Mechanic',
+                    'data'=>array_reverse($series)
+                    ]
+                ],
+            'xAxis'=>array_reverse($xAxis),
+            ];
+        return $template;
+    }
+
+    public function get(){
+        $data= $this->getManpower();
+        return $data;
+    }
+
+}
+
+class highLevel{
+    private $filterBasic,$grades;
+    function __construct(){
+        $this->grades=['L10','L9','L8','L7','L6','L5','L4','L3','L2','L1'];
+        $this->filterBasic=[
+            ['perusahaan','=',1],
+            ['subSection','!=',''],
+            ['subSection','!=',null],
+            ['subSection','!=','-'],
+            ['section','=','PLANT'],
+            ['status','=','AKTIF'],
+            ['jabatanStr','=','MECHANIC'],
+            ['grade','!=','-'],
+            ['grade','!=',''],
+            ['grade','!=',null],
+            ['grade','not like','%MPP%']
+        ];
+    }
+
+    private function filter($filter){
+        $filters=array_merge($this->filterBasic,$filter);
+        return $filters;
+    }
+
+    private function getSubsection(){
+        $manpower=manpower::where($this->filterBasic)->get(['subSection']);
+        foreach ($manpower as $value) {
+            $subSection[]=$value->subSection;
+        }
+        return array_values(array_unique($subSection));
+    }
+    private function getHighGradesBySubsection($subsection){
+        $hasil=[];
+        foreach ($subsection as $value) {
+            $manpowers=[];
+            foreach ($this->grades as $grade) {
+                $highGrade=$grade;
+                $manpowers=manpower::where($this->filter([['subSection','=',$value],['grade','=',$grade]]))->get();
+                if(count($manpowers)>0){
+                    break;
+                }
+            }
+            $hasil[]= [
+                "name"=> $value,
+                "visits"=> $highGrade,
+                "pct"=> count($manpowers),
+                "class"=> ""
+            ];
+        }
+        return $hasil;
+    }
+
+    public function get(){
+        $subSections=$this->getSubsection();
+        return $this->getHighGradesBySubsection($subSections);
+    }
+}
+
+class gradeQty{
+    private $grades,$filterBasic;
+    function __construct(){
+        $this->filterBasic=[
+            ['perusahaan','=',1],
+            ['subSection','!=',''],
+            ['subSection','!=',null],
+            ['subSection','!=','-'],
+            ['section','=','PLANT'],
+            ['status','=','AKTIF'],
+            ['jabatanStr','=','MECHANIC'],
+            ['grade','!=','-'],
+            ['grade','!=',''],
+            ['grade','!=',null],
+            ['grade','not like','%MPP%']
+        ];
+        $this->grades=['L10','L9','L8','L7','L6','L5','L4','L3','L2','L1'];
+    }
+    private function filter($filter){
+        $filters=array_merge($this->filterBasic,$filter);
+        return $filters;
+    }
+
+    private function countGrade(){
+        $xAxis=[];
+        $data=[];
+        $listGrade=[];
+        $mp=manpower::where($this->filterBasic)->get();
+        $total=count($mp);
+        foreach ($this->grades as $grade) {
+            $manpowers=manpower::where($this->filter([['grade','=',$grade]]))->get();
+            $j=count($manpowers);
+            if($j>0){
+                $xAxis[]=$grade;
+                $data[]=$j;
+                $listGrade[]=[
+                    "name"=> $grade,
+                    "percentage"=>round($j/$total*100,2) ,
+                    "class"=> "bg-theme bg-opacity-95"
+                ];
+            }
+        }
+
+        $template=[
+            'pyramid'=>[
+                'xAxis'=>$xAxis,
+                'series'=>[
+                    [
+                        'name'=> "",
+                        'data'=> $data,
+                    ],
+                ],
+            ],
+            'listGrade'=>$listGrade
+            ];
+        return $template;
+    }
+    public function get(){
+        return $this->countGrade();
+    }
 }
 

@@ -186,6 +186,10 @@ Route::middleware('auth:sanctum')->get('/stats',[v1DashboardReadiness::class,'ge
 Route::middleware('auth:sanctum')->get('/server',[v1DashboardReadiness::class,'getDataServer']);
 Route::middleware('auth:sanctum')->get('/resumeRead',[v1DashboardReadiness::class,'getResumeRead']);
 Route::middleware('auth:sanctum')->get('/kecrut',[v1DashboardReadiness::class,'loginDashboard']);
+Route::middleware('auth:sanctum')->get('/highlvl',[v1DashboardReadiness::class,'highestLevelQty']);
+Route::middleware('auth:sanctum')->get('/qtymanpowerlog',[v1DashboardReadiness::class,'qtyManpowerLog']);
+Route::middleware('auth:sanctum')->get('/gradeqty',[v1DashboardReadiness::class,'gradeQty']);
+
 // Route::post('/apiLogin',[v1DashboardReadiness::class,'Apilogin']);
 
 
